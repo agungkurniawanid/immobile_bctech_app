@@ -15,7 +15,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final primaryColor = ref.watch(primaryColorProvider);
-    final secondaryColor = ref.watch(secondaryColorProvider);
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
