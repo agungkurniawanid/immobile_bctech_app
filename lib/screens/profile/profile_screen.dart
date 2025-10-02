@@ -78,7 +78,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       border: Border.all(color: Colors.white, width: 5),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.15),
+                          color: Colors.black.withValues(alpha: 0.15),
                           blurRadius: 12,
                           offset: const Offset(0, 3),
                         ),
@@ -133,7 +133,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         borderRadius: BorderRadius.circular(100),
                         boxShadow: [
                           BoxShadow(
-                            color: Color(0xFFFF5F6D).withOpacity(0.6),
+                            color: Color(0xFFFF5F6D).withValues(alpha: 0.6),
                             blurRadius: 8,
                             offset: const Offset(0, 6),
                           ),

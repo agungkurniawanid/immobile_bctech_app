@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/legacy.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:immobile_bctech_app/const/const_color.dart';
 import 'package:immobile_bctech_app/screens/dashboard/dashboard_screen.dart';
+import 'package:immobile_bctech_app/screens/history/history_screen.dart';
 import 'package:immobile_bctech_app/screens/profile/profile_screen.dart';
 
 final bottomNavIndexProvider = StateProvider<int>((ref) => 0);
@@ -14,7 +15,7 @@ class NavigationController extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentIndex = ref.watch(bottomNavIndexProvider);
-    final pages = [DashboardScreen(), Container(), ProfileScreen()];
+    final pages = [DashboardScreen(), HistoryScreen(), ProfileScreen()];
 
     return Scaffold(
       body: IndexedStack(index: currentIndex, children: pages),
@@ -29,7 +30,7 @@ class NavigationController extends ConsumerWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.09),
+              color: Colors.black.withValues(alpha: 0.09),
               blurRadius: 10,
               offset: const Offset(0, -2),
             ),
@@ -96,7 +97,7 @@ class NavigationController extends ConsumerWidget {
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
                   color: isActive
-                      ? primaryColor.withOpacity(0.1)
+                      ? primaryColor.withValues(alpha: 0.1)
                       : Colors.transparent,
                   shape: BoxShape.circle,
                 ),

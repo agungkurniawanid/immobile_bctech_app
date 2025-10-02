@@ -38,7 +38,7 @@ class _WidgetStockState extends ConsumerState<WidgetStock> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 6,
             offset: const Offset(0, 3),
           ),
@@ -57,7 +57,7 @@ class _WidgetStockState extends ConsumerState<WidgetStock> {
               ),
               boxShadow: [
                 BoxShadow(
-                  color: primaryColor.withOpacity(0.4),
+                  color: primaryColor.withValues(alpha: 0.4),
                   blurRadius: 8,
                   offset: const Offset(0, 4),
                 ),

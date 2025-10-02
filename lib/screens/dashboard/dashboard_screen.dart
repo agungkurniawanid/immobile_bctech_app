@@ -38,7 +38,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         'page': null,
       },
       {
-        'icon': FontAwesomeIcons.ellipsisH,
+        'icon': FontAwesomeIcons.ellipsis,
         'title': 'More',
         'color': Colors.purpleAccent,
         'page': null,

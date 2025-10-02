@@ -1,0 +1,452 @@
+// history_screen.dart
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:immobile_bctech_app/const/const_color.dart';
+import 'package:immobile_bctech_app/providers/provider_history.dart';
+
+class HistoryScreen extends ConsumerStatefulWidget {
+  const HistoryScreen({super.key});
+
+  @override
+  ConsumerState<HistoryScreen> createState() => _HistoryScreenState();
+}
+
+class _HistoryScreenState extends ConsumerState<HistoryScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  void _onSearchChanged() {
+    ref.read(searchQueryProvider.notifier).state = _searchController.text;
+  }
+
+  void _startSearch() {
+    ref.read(isSearchingProvider.notifier).state = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _searchFocusNode.requestFocus();
+    });
+  }
+
+  void _stopSearch() {
+    ref.read(isSearchingProvider.notifier).state = false;
+    ref.read(searchQueryProvider.notifier).state = '';
+    _searchController.clear();
+    _searchFocusNode.unfocus();
+  }
+
+  void _clearSearch() {
+    ref.read(searchQueryProvider.notifier).state = '';
+    _searchController.clear();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _searchFocusNode.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final primaryColor = ref.watch(primaryColorProvider);
+    final isSearching = ref.watch(isSearchingProvider);
+    final searchQuery = ref.watch(searchQueryProvider);
+    final filteredHistory = ref.watch(filteredHistoryProvider);
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: isSearching
+          ? _buildSearchAppBar(primaryColor, searchQuery)
+          : _buildNormalAppBar(primaryColor),
+      body: _buildBody(filteredHistory, isSearching, searchQuery),
+    );
+  }
+
+  AppBar _buildNormalAppBar(Color primaryColor) {
+    return AppBar(
+      title: Text(
+        'History',
+        style: GoogleFonts.roboto(fontSize: 24, fontWeight: FontWeight.bold),
+      ),
+      backgroundColor: primaryColor,
+      foregroundColor: Colors.white,
+      elevation: 0,
+      centerTitle: true,
+      automaticallyImplyLeading: false,
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.search),
+          onPressed: _startSearch,
+          tooltip: 'Search',
+        ),
+      ],
+    );
+  }
+
+  PreferredSizeWidget _buildSearchAppBar(
+    Color primaryColor,
+    String searchQuery,
+  ) {
+    return AppBar(
+      backgroundColor: primaryColor,
+      foregroundColor: Colors.white,
+      elevation: 0,
+      automaticallyImplyLeading: false,
+      title: _buildSearchField(primaryColor),
+      actions: [
+        if (searchQuery.isNotEmpty)
+          IconButton(
+            icon: const Icon(Icons.clear),
+            onPressed: _clearSearch,
+            tooltip: 'Clear search',
+          ),
+        IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: _stopSearch,
+          tooltip: 'Close search',
+        ),
+      ],
+      toolbarHeight: 80,
+    );
+  }
+
+  Widget _buildSearchField(Color primaryColor) {
+    return Container(
+      height: 50,
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.2),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: _searchController,
+              focusNode: _searchFocusNode,
+              style: const TextStyle(color: Colors.white, fontSize: 18),
+              decoration: InputDecoration(
+                hintText: 'Search history...',
+                hintStyle: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.7),
+                  fontSize: 18,
+                ),
+                border: InputBorder.none,
+                prefixIcon: Padding(
+                  padding: const EdgeInsets.only(left: 16, right: 8),
+                  child: Icon(
+                    Icons.search,
+                    color: Colors.white.withValues(alpha: 0.7),
+                    size: 24,
+                  ),
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  vertical: 12,
+                  horizontal: 8,
+                ),
+                isDense: false,
+              ),
+              cursorColor: Colors.white,
+              autofocus: true,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBody(
+    List<HistoryItem> historyItems,
+    bool isSearching,
+    String searchQuery,
+  ) {
+    if (isSearching && searchQuery.isEmpty) {
+      return _buildSearchSuggestions();
+    }
+
+    if (isSearching && searchQuery.isNotEmpty && historyItems.isEmpty) {
+      return _buildNoResults(searchQuery);
+    }
+
+    if (historyItems.isEmpty) {
+      return _buildEmptyState();
+    }
+
+    final primaryColor = ref.watch(primaryColorProvider);
+
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "${historyItems.length} of ${historyItems.length} Data Shown",
+                style: GoogleFonts.roboto(fontSize: 16, color: Colors.black),
+              ),
+
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 0,
+                ),
+                decoration: BoxDecoration(
+                  color: Color(0xFFF7FBF2),
+                  border: Border.all(color: primaryColor, width: 1.5),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: DropdownButton<String>(
+                  value: 'PO Date',
+                  icon: const Icon(
+                    FontAwesomeIcons.arrowDownWideShort,
+                    color: Colors.black,
+                    size: 20,
+                  ),
+                  underline: const SizedBox(),
+                  borderRadius: BorderRadius.circular(12),
+                  elevation: 2,
+                  dropdownColor: Colors.white, // background dropdown menu
+                  style: GoogleFonts.roboto(fontSize: 16, color: Colors.black),
+                  items:
+                      [
+                        'PO Date',
+                        'Today',
+                        'This Week',
+                        'This Month',
+                        'Last 3 Months',
+                      ].map((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                  onChanged: (String? newValue) {},
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+        Expanded(
+          child: ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            itemCount: historyItems.length,
+            itemBuilder: (context, index) {
+              final item = historyItems[index];
+              return _buildHistoryItem(item);
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSearchSuggestions() {
+    final suggestions = [
+      'Today',
+      'This week',
+      'Payment',
+      'Refund',
+      'Transaction',
+    ];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.all(16),
+          child: Text(
+            'Recent Searches',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Colors.black87,
+            ),
+          ),
+        ),
+
+        Expanded(
+          child: ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            itemCount: suggestions.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                leading: Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade100,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.history,
+                    size: 20,
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+                title: Text(
+                  suggestions[index],
+                  style: const TextStyle(fontSize: 16),
+                ),
+                onTap: () {
+                  _searchController.text = suggestions[index];
+                },
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildNoResults(String query) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.search_off, size: 80, color: Colors.grey.shade400),
+            const SizedBox(height: 16),
+            Text(
+              'No results found',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey.shade600,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'No matches for "$query"',
+              style: TextStyle(fontSize: 16, color: Colors.grey.shade500),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            FilledButton(
+              onPressed: _clearSearch,
+              style: FilledButton.styleFrom(
+                backgroundColor: ref.read(primaryColorProvider),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
+              ),
+              child: const Text('Clear Search'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.history, size: 80, color: Colors.grey.shade400),
+          const SizedBox(height: 16),
+          Text(
+            'No history yet',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey.shade600,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Your transaction history will appear here',
+            style: TextStyle(fontSize: 16, color: Colors.grey.shade500),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHistoryItem(HistoryItem item) {
+    final primaryColor = ref.read(primaryColorProvider);
+    return Container(
+      color: Color(0xFFF7FBF2),
+      margin: const EdgeInsets.only(bottom: 12),
+      child: ListTile(
+        contentPadding: const EdgeInsets.all(12),
+        leading: Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 8,
+          ), // Padding yang lebih proporsional
+          constraints: BoxConstraints(
+            minWidth: 80, // Minimum width agar tidak terlalu kecil
+            minHeight: 60, // Minimum height agar cukup untuk 2 baris
+          ),
+          decoration: BoxDecoration(
+            color: Color(0xFFB7F1B9),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Text(
+            item.label.replaceAll(' ', '\n'), // ← ubah spasi jadi newline
+            style: GoogleFonts.roboto(
+              fontSize: 16,
+              color: primaryColor,
+              fontWeight: FontWeight.bold,
+              height: 1.2, // kasih line height biar rapi
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+        title: Text(
+          item.title,
+          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
+        ),
+        subtitle: Column(
+          children: [
+            Row(
+              children: [
+                Icon(
+                  FontAwesomeIcons.solidCircleCheck,
+                  size: 18,
+                  color: Color(0xFF4CAF50),
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  item.date,
+                  style: TextStyle(color: Colors.black, fontSize: 14),
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Row(
+              children: [
+                Icon(
+                  FontAwesomeIcons.solidUser,
+                  size: 18,
+                  color: Color(0xFF4CAF50),
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  item.amount,
+                  style: TextStyle(color: Colors.black, fontSize: 14),
+                ),
+              ],
+            ),
+          ],
+        ),
+        trailing: Icon(
+          FontAwesomeIcons.chevronRight,
+          color: Colors.black,
+          size: 18,
+        ),
+        onTap: () {},
+      ),
+    );
+  }
+}
