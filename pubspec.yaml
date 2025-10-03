@@ -37,6 +37,8 @@ dependencies:
   flutter_riverpod: ^3.0.1
   google_fonts: ^6.3.1
   font_awesome_flutter: ^10.10.0
+  dashed_border: ^1.0.2
+  dotted_border: ^3.1.0
 
 dev_dependencies:
   flutter_test:

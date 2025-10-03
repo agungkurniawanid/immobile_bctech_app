@@ -10,3 +10,16 @@ class GRPurchaseOrder {
     required this.vendor,
   });
 }
+
+class GRPurchaseOrderDetail {
+  int id;
+  String title;
+  String sku;
+  int qty;
+  GRPurchaseOrderDetail({
+    required this.id,
+    required this.title,
+    required this.sku,
+    required this.qty,
+  });
+}

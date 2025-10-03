@@ -20,3 +20,24 @@ final filteredPurchaseOrderProvider = Provider<List<GRPurchaseOrder>>((ref) {
         item.vendor.toLowerCase().contains(searchQuery.toLowerCase());
   }).toList();
 });
+
+final searchQueryProviderInpageDetail = StateProvider<String>((ref) => '');
+final isSearchingProviderInpageDetail = StateProvider<bool>((ref) => false);
+
+final filteredPurchaseOrderProviderDetail =
+    Provider<List<GRPurchaseOrderDetail>>((ref) {
+      final searchQuery = ref.watch(searchQueryProviderInpageDetail);
+      final purchaseOrderListDetail = ref.watch(
+        purchaseOrderListProviderDetail,
+      );
+
+      if (searchQuery.isEmpty) {
+        return purchaseOrderListDetail;
+      }
+
+      return purchaseOrderListDetail.where((item) {
+        return item.title.toLowerCase().contains(searchQuery.toLowerCase()) ||
+            item.sku.contains(searchQuery) ||
+            item.qty.toString().contains(searchQuery.toLowerCase());
+      }).toList();
+    });

@@ -5,6 +5,7 @@ import 'package:immobile_bctech_app/models/inpage_model.dart';
 import 'package:immobile_bctech_app/providers/inpage_provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:immobile_bctech_app/screens/in_page/inpage_detail_screen.dart';
 
 class InpageSreen extends ConsumerStatefulWidget {
   const InpageSreen({super.key});
@@ -369,7 +370,16 @@ class _InpageSreenState extends ConsumerState<InpageSreen> {
   Widget _buildHistoryItem(GRPurchaseOrder item) {
     final primaryColor = ref.read(primaryColorProvider);
     return InkWell(
-      onTap: () {},
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return InpageDetailSreen();
+            },
+          ),
+        );
+      },
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         clipBehavior: Clip.hardEdge,
