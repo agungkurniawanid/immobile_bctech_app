@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:immobile_bctech_app/main.dart';
-import 'package:immobile_bctech_app/providers/provider_login.dart';
-import 'package:immobile_bctech_app/screens/layouts/bottom_navigation_layout.dart';
+import 'package:immobile_bctech_app/providers/login_provider.dart';
+import 'package:immobile_bctech_app/layouts/bottom_navigation_layout.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -48,6 +48,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
               ),
             ),
+
             Align(
               alignment: Alignment.bottomCenter,
               child: Container(
@@ -76,8 +77,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         color: Color(0xFF024110),
                       ),
                     ),
+
                     const SizedBox(height: 18),
                     Divider(color: Color(0xFFAFAFAF), height: 32, thickness: 1),
+
                     const SizedBox(height: 24),
                     TextField(
                       keyboardType: TextInputType.emailAddress,
@@ -104,6 +107,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ),
                       ),
                     ),
+
                     const SizedBox(height: 28),
                     TextField(
                       focusNode: focusNode,
@@ -175,6 +179,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ),
                       ),
                     ),
+
                     const Spacer(),
                     Text(
                       "Version 1.0.0",

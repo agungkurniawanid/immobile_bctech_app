@@ -1,20 +1,19 @@
-// history_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:immobile_bctech_app/const/color_const.dart';
-import 'package:immobile_bctech_app/models/history_model.dart';
-import 'package:immobile_bctech_app/providers/history_provider.dart';
+import 'package:immobile_bctech_app/models/outpage_model.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:immobile_bctech_app/providers/outpage_provider.dart';
 
-class HistoryScreen extends ConsumerStatefulWidget {
-  const HistoryScreen({super.key});
+class OutpageScreen extends ConsumerStatefulWidget {
+  const OutpageScreen({super.key});
 
   @override
-  ConsumerState<HistoryScreen> createState() => _HistoryScreenState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _OutpageScreenState();
 }
 
-class _HistoryScreenState extends ConsumerState<HistoryScreen> {
+class _OutpageScreenState extends ConsumerState<OutpageScreen> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
 
@@ -25,25 +24,26 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   }
 
   void _onSearchChanged() {
-    ref.read(searchQueryProvider.notifier).state = _searchController.text;
+    ref.read(searchQueryProviderOutPage.notifier).state =
+        _searchController.text;
   }
 
   void _startSearch() {
-    ref.read(isSearchingProvider.notifier).state = true;
+    ref.read(isSearchingProviderOutPage.notifier).state = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _searchFocusNode.requestFocus();
     });
   }
 
   void _stopSearch() {
-    ref.read(isSearchingProvider.notifier).state = false;
-    ref.read(searchQueryProvider.notifier).state = '';
+    ref.read(isSearchingProviderOutPage.notifier).state = false;
+    ref.read(searchQueryProviderOutPage.notifier).state = '';
     _searchController.clear();
     _searchFocusNode.unfocus();
   }
 
   void _clearSearch() {
-    ref.read(searchQueryProvider.notifier).state = '';
+    ref.read(searchQueryProviderOutPage.notifier).state = '';
     _searchController.clear();
   }
 
@@ -57,9 +57,9 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   @override
   Widget build(BuildContext context) {
     final primaryColor = ref.watch(primaryColorProvider);
-    final isSearching = ref.watch(isSearchingProvider);
-    final searchQuery = ref.watch(searchQueryProvider);
-    final filteredHistory = ref.watch(filteredHistoryProvider);
+    final isSearching = ref.watch(isSearchingProviderOutPage);
+    final searchQuery = ref.watch(searchQueryProviderOutPage);
+    final filteredHistory = ref.watch(filteredSalesOrderProvider);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -73,14 +73,13 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   AppBar _buildNormalAppBar(Color primaryColor) {
     return AppBar(
       title: Text(
-        'History',
+        'Sales Order',
         style: GoogleFonts.roboto(fontSize: 24, fontWeight: FontWeight.bold),
       ),
       backgroundColor: primaryColor,
       foregroundColor: Colors.white,
       elevation: 0,
       centerTitle: true,
-      automaticallyImplyLeading: false,
       actions: [
         IconButton(
           icon: const Icon(Icons.search),
@@ -133,7 +132,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
               focusNode: _searchFocusNode,
               style: const TextStyle(color: Colors.white, fontSize: 18),
               decoration: InputDecoration(
-                hintText: 'Search history...',
+                hintText: 'Search Purchase Order...',
                 hintStyle: TextStyle(
                   color: Colors.white.withValues(alpha: 0.7),
                   fontSize: 18,
@@ -163,7 +162,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   }
 
   Widget _buildBody(
-    List<HistoryModel> historyItems,
+    List<SalesOrder> salesOrders,
     bool isSearching,
     String searchQuery,
   ) {
@@ -171,11 +170,11 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
       return _buildSearchSuggestions();
     }
 
-    if (isSearching && searchQuery.isNotEmpty && historyItems.isEmpty) {
+    if (isSearching && searchQuery.isNotEmpty && salesOrders.isEmpty) {
       return _buildNoResults(searchQuery);
     }
 
-    if (historyItems.isEmpty) {
+    if (salesOrders.isEmpty) {
       return _buildEmptyState();
     }
 
@@ -189,13 +188,12 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "${historyItems.length} of ${historyItems.length} Data Shown",
+                "${salesOrders.length} of ${salesOrders.length} Data Shown",
                 style: GoogleFonts.roboto(fontSize: 16, color: Colors.black),
               ),
-
               Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
+                  horizontal: 20,
                   vertical: 0,
                 ),
                 decoration: BoxDecoration(
@@ -230,14 +228,13 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             ],
           ),
         ),
-
         const SizedBox(height: 16),
         Expanded(
           child: ListView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: historyItems.length,
+            itemCount: salesOrders.length,
             itemBuilder: (context, index) {
-              final item = historyItems[index];
+              final item = salesOrders[index];
               return _buildHistoryItem(item);
             },
           ),
@@ -311,7 +308,6 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.search_off, size: 80, color: Colors.grey.shade400),
-
             const SizedBox(height: 16),
             Text(
               'No results found',
@@ -321,14 +317,12 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                 color: Colors.grey.shade600,
               ),
             ),
-
             const SizedBox(height: 8),
             Text(
               'No matches for "$query"',
               style: TextStyle(fontSize: 16, color: Colors.grey.shade500),
               textAlign: TextAlign.center,
             ),
-
             const SizedBox(height: 24),
             FilledButton(
               onPressed: _clearSearch,
@@ -354,7 +348,6 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.history, size: 80, color: Colors.grey.shade400),
-
           const SizedBox(height: 16),
           Text(
             'No history yet',
@@ -364,7 +357,6 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
               color: Colors.grey.shade600,
             ),
           ),
-
           const SizedBox(height: 8),
           Text(
             'Your transaction history will appear here',
@@ -375,74 +367,89 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
     );
   }
 
-  Widget _buildHistoryItem(HistoryModel item) {
+  Widget _buildHistoryItem(SalesOrder item) {
     final primaryColor = ref.read(primaryColorProvider);
-    return Container(
-      color: Color(0xFFF7FBF2),
-      margin: const EdgeInsets.only(bottom: 12),
-      child: ListTile(
-        contentPadding: const EdgeInsets.all(12),
-        leading: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          constraints: BoxConstraints(minWidth: 80, minHeight: 60),
-          decoration: BoxDecoration(
-            color: Color(0xFFB7F1B9),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Text(
-            item.label.replaceAll(' ', '\n'),
-            style: GoogleFonts.roboto(
-              fontSize: 16,
-              color: primaryColor,
-              fontWeight: FontWeight.bold,
-              height: 1.2,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-        title: Text(
-          item.title,
-          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
-        ),
-        subtitle: Column(
-          children: [
-            Row(
-              children: [
-                Icon(
-                  FontAwesomeIcons.solidCircleCheck,
-                  size: 18,
-                  color: Color(0xFF4CAF50),
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  item.date,
-                  style: TextStyle(color: Colors.black, fontSize: 14),
-                ),
-              ],
-            ),
-            const SizedBox(height: 6),
-            Row(
-              children: [
-                Icon(
-                  FontAwesomeIcons.solidUser,
-                  size: 18,
-                  color: Color(0xFF4CAF50),
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  item.amount,
-                  style: TextStyle(color: Colors.black, fontSize: 14),
-                ),
-              ],
+    return InkWell(
+      onTap: () {},
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        clipBehavior: Clip.hardEdge,
+        decoration: BoxDecoration(
+          color: Color(0xFFF7FBF2),
+          borderRadius: BorderRadius.all(Radius.circular(20)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withValues(alpha: 0.3),
+              spreadRadius: 1,
+              blurRadius: 5,
+              offset: const Offset(0, 3),
             ),
           ],
         ),
-        trailing: Icon(
-          FontAwesomeIcons.chevronRight,
-          color: Colors.black,
-          size: 18,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Color(0xFFB7F1B9),
+                    borderRadius: BorderRadius.only(
+                      bottomRight: Radius.circular(20),
+                    ),
+                  ),
+                  child: Text(
+                    item.uniqueTitle,
+                    style: GoogleFonts.roboto(
+                      fontSize: 12,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                Text(
+                  'PO Date: ${item.date}',
+                  style: GoogleFonts.roboto(fontSize: 14, color: Colors.black),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Icon(
+                    FontAwesomeIcons.chevronRight,
+                    size: 16,
+                    color: primaryColor,
+                  ),
+                ),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Text(
+                    'Customer: ',
+                    style: GoogleFonts.roboto(
+                      fontSize: 14,
+                      color: Colors.black,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    textAlign: TextAlign.left,
+                  ),
+                  Text(
+                    item.customer,
+                    style: GoogleFonts.roboto(
+                      fontSize: 16,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
-        onTap: () {},
       ),
     );
   }

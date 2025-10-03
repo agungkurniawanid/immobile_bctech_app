@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:immobile_bctech_app/const/const_color.dart';
-import 'package:immobile_bctech_app/screens/auth/login_screen.dart';
+import 'package:immobile_bctech_app/const/color_const.dart';
+import 'package:immobile_bctech_app/mocks/dashboard_mock.dart';
 import 'package:immobile_bctech_app/widgets/widget_menu_card.dart';
 import 'package:immobile_bctech_app/widgets/widget_stock.dart';
 
@@ -18,32 +18,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     final primaryColor = ref.watch(primaryColorProvider);
-    final List<Map<String, dynamic>> menuItems = [
-      {
-        'icon': FontAwesomeIcons.box,
-        'title': 'In',
-        'color': Colors.red,
-        'page': null,
-      },
-      {
-        'icon': FontAwesomeIcons.arrowRightFromBracket,
-        'title': 'Out',
-        'color': primaryColor,
-        'page': LoginScreen(),
-      },
-      {
-        'icon': FontAwesomeIcons.truck,
-        'title': 'Stock Take',
-        'color': Colors.indigoAccent,
-        'page': null,
-      },
-      {
-        'icon': FontAwesomeIcons.ellipsis,
-        'title': 'More',
-        'color': Colors.purpleAccent,
-        'page': null,
-      },
-    ];
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -100,6 +74,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                   ],
                                 ),
                               ),
+
                               const Spacer(),
                               Icon(
                                 FontAwesomeIcons.solidBell,
@@ -150,6 +125,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                     color: Colors.black,
                   ),
                 ),
+
                 const SizedBox(height: 10),
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
@@ -160,6 +136,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                     children: List.generate(10, (index) => const WidgetStock()),
                   ),
                 ),
+
                 const SizedBox(height: 20),
                 const Text(
                   'Recent Purchase Orders',
@@ -169,6 +146,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                     color: Colors.black,
                   ),
                 ),
+
                 const SizedBox(height: 10),
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,

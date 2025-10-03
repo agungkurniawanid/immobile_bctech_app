@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:immobile_bctech_app/const/const_color.dart';
+import 'package:immobile_bctech_app/const/color_const.dart';
 import 'package:immobile_bctech_app/screens/dashboard/dashboard_screen.dart';
 import 'package:immobile_bctech_app/screens/history/history_screen.dart';
 import 'package:immobile_bctech_app/screens/profile/profile_screen.dart';
