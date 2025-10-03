@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:immobile_bctech_app/const/color_const.dart';
 import 'package:immobile_bctech_app/main.dart';
 import 'package:immobile_bctech_app/providers/login_provider.dart';
 import 'package:immobile_bctech_app/layouts/bottom_navigation_layout.dart';
@@ -21,6 +22,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     final isObscure = ref.watch(obscurePassword);
     final focusNode = ref.watch(passwordFocusNodeProvider);
+    final primaryColor = ref.watch(primaryColorProvider);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -74,7 +76,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       style: GoogleFonts.roboto(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF024110),
+                        color: primaryColor,
                       ),
                     ),
 
@@ -88,7 +90,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         labelText: 'Username',
                         labelStyle: TextStyle(color: Color(0xFF7C7C7C)),
                         floatingLabelStyle: TextStyle(
-                          color: Color(0xFF024110),
+                          color: primaryColor,
                           fontWeight: FontWeight.w600,
                         ),
                         enabledBorder: OutlineInputBorder(
@@ -99,10 +101,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           borderRadius: BorderRadius.circular(100),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color(0xFF024110),
-                            width: 2,
-                          ),
+                          borderSide: BorderSide(color: primaryColor, width: 2),
                           borderRadius: BorderRadius.circular(100),
                         ),
                       ),
@@ -115,8 +114,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       decoration: InputDecoration(
                         labelText: 'Password',
                         labelStyle: const TextStyle(color: Color(0xFF7C7C7C)),
-                        floatingLabelStyle: const TextStyle(
-                          color: Color(0xFF024110),
+                        floatingLabelStyle: TextStyle(
+                          color: primaryColor,
                           fontWeight: FontWeight.w600,
                         ),
                         enabledBorder: OutlineInputBorder(
@@ -127,17 +126,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           borderRadius: BorderRadius.circular(100),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            color: Color(0xFF024110),
-                            width: 2,
-                          ),
+                          borderSide: BorderSide(color: primaryColor, width: 2),
                           borderRadius: BorderRadius.circular(100),
                         ),
                         suffixIcon: IconButton(
                           icon: Icon(
                             isObscure ? Icons.visibility_off : Icons.visibility,
                             color: focusNode.hasFocus
-                                ? const Color(0xFF024110)
+                                ? primaryColor
                                 : Colors.black,
                           ),
                           onPressed: () {
@@ -163,7 +159,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF024110),
+                          backgroundColor: primaryColor,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(100),
@@ -185,7 +181,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       "Version 1.0.0",
                       style: GoogleFonts.roboto(
                         fontSize: 14,
-                        color: Color(0xFF171717),
+                        color: Colors.black,
                       ),
                     ),
                   ],

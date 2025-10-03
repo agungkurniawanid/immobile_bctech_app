@@ -9,59 +9,126 @@ import 'package:immobile_bctech_app/screens/profile/profile_screen.dart';
 
 final bottomNavIndexProvider = StateProvider<int>((ref) => 0);
 
-class NavigationController extends ConsumerWidget {
+class NavigationController extends ConsumerStatefulWidget {
   const NavigationController({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<NavigationController> createState() =>
+      _NavigationControllerState();
+}
+
+class _NavigationControllerState extends ConsumerState<NavigationController> {
+  late PageController _pageController;
+  final int itemCount = 3;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(
+      initialPage: ref.read(bottomNavIndexProvider),
+    );
+  }
+
+  void _onPageChanged(int index) {
+    ref.read(bottomNavIndexProvider.notifier).state = index;
+  }
+
+  void _onItemTapped(int index) {
+    _pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+    ref.read(bottomNavIndexProvider.notifier).state = index;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final currentIndex = ref.watch(bottomNavIndexProvider);
-    final pages = [DashboardScreen(), HistoryScreen(), ProfileScreen()];
+    final screenWidth = MediaQuery.of(context).size.width;
+    final primaryColor = ref.watch(primaryColorProvider);
+
+    final pages = [
+      const DashboardScreen(),
+      const HistoryScreen(),
+      const ProfileScreen(),
+    ];
 
     return Scaffold(
-      body: IndexedStack(index: currentIndex, children: pages),
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: _onPageChanged,
+        children: pages,
+      ),
       bottomNavigationBar: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-        height: 140,
+        height: 80,
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
+          border: Border(
+            top: BorderSide(color: Colors.grey.shade300, width: 0.5),
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.09),
-              blurRadius: 10,
-              offset: const Offset(0, -2),
-            ),
-          ],
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+        child: Stack(
           children: [
-            _buildNavItem(
-              context,
-              ref,
-              index: 0,
-              inactiveIcon: FontAwesomeIcons.house,
-              activeIcon: FontAwesomeIcons.solidHouse,
-              isActive: currentIndex == 0,
+            AnimatedPositioned(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+              left:
+                  (screenWidth / itemCount) * currentIndex +
+                  (screenWidth / itemCount - 40) / 2.8,
+              top: 0,
+              child: Container(
+                width: 60,
+                height: 6,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      primaryColor,
+                      primaryColor.withOpacity(0.4),
+                      Colors.transparent,
+                    ],
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: primaryColor.withOpacity(0.6),
+                      blurRadius: 8,
+                      spreadRadius: 1,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            _buildNavItem(
-              context,
-              ref,
-              index: 1,
-              inactiveIcon: FontAwesomeIcons.fileLines,
-              activeIcon: FontAwesomeIcons.solidFileLines,
-              isActive: currentIndex == 1,
-            ),
-            _buildNavItem(
-              context,
-              ref,
-              index: 2,
-              inactiveIcon: FontAwesomeIcons.user,
-              activeIcon: FontAwesomeIcons.solidUser,
-              isActive: currentIndex == 2,
+            Row(
+              children: [
+                _buildNavItem(
+                  context,
+                  index: 0,
+                  inactiveIcon: FontAwesomeIcons.house,
+                  activeIcon: FontAwesomeIcons.solidHouse,
+                  isActive: currentIndex == 0,
+                  onTap: _onItemTapped,
+                ),
+                _buildNavItem(
+                  context,
+                  index: 1,
+                  inactiveIcon: FontAwesomeIcons.fileLines,
+                  activeIcon: FontAwesomeIcons.solidFileLines,
+                  isActive: currentIndex == 1,
+                  onTap: _onItemTapped,
+                ),
+                _buildNavItem(
+                  context,
+                  index: 2,
+                  inactiveIcon: FontAwesomeIcons.user,
+                  activeIcon: FontAwesomeIcons.solidUser,
+                  isActive: currentIndex == 2,
+                  onTap: _onItemTapped,
+                ),
+              ],
             ),
           ],
         ),
@@ -70,45 +137,27 @@ class NavigationController extends ConsumerWidget {
   }
 
   Widget _buildNavItem(
-    BuildContext context,
-    WidgetRef ref, {
+    BuildContext context, {
     required int index,
     required IconData inactiveIcon,
     required IconData activeIcon,
     required bool isActive,
+    required Function(int) onTap,
   }) {
-    Color primaryColor = ref.watch(primaryColorProvider);
+    final primaryColor = ref.watch(primaryColorProvider);
+
     return Expanded(
       child: GestureDetector(
-        onTap: () {
-          ref.read(bottomNavIndexProvider.notifier).state = index;
-        },
+        onTap: () => onTap(index),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const SizedBox(height: 8),
-            TweenAnimationBuilder<double>(
-              duration: const Duration(milliseconds: 300),
-              tween: Tween(begin: 1.0, end: isActive ? 1.2 : 1.0),
-              builder: (context, scale, child) {
-                return Transform.scale(scale: scale, child: child);
-              },
-              child: Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: isActive
-                      ? primaryColor.withValues(alpha: 0.1)
-                      : Colors.transparent,
-                  shape: BoxShape.circle,
-                ),
-                child: FaIcon(
-                  isActive ? activeIcon : inactiveIcon,
-                  color: isActive ? primaryColor : Colors.grey,
-                  size: isActive ? 22 : 22,
-                ),
-              ),
+            FaIcon(
+              isActive ? activeIcon : inactiveIcon,
+              color: isActive ? primaryColor : Colors.grey,
+              size: 22,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             Text(
               index == 0
                   ? 'Home'
@@ -117,18 +166,8 @@ class NavigationController extends ConsumerWidget {
                   : 'Profile',
               style: TextStyle(
                 color: isActive ? primaryColor : Colors.grey,
-                fontSize: isActive ? 12 : 12,
+                fontSize: 12,
                 fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
-              ),
-            ),
-            const SizedBox(height: 4),
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              width: isActive ? 6 : 0,
-              height: isActive ? 6 : 0,
-              decoration: BoxDecoration(
-                color: primaryColor,
-                borderRadius: BorderRadius.circular(3),
               ),
             ),
           ],
