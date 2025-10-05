@@ -10,3 +10,16 @@ class SalesOrder {
     required this.customer,
   });
 }
+
+class SalesOrderDetail {
+  int id;
+  String title;
+  String sku;
+  int qty;
+  SalesOrderDetail({
+    required this.id,
+    required this.title,
+    required this.sku,
+    required this.qty,
+  });
+}

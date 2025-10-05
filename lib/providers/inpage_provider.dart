@@ -5,6 +5,8 @@ import 'package:immobile_bctech_app/models/inpage_model.dart';
 
 final searchQueryProviderInpage = StateProvider<String>((ref) => '');
 final isSearchingProviderInpage = StateProvider<bool>((ref) => false);
+final searchQueryProviderInpageDetail = StateProvider<String>((ref) => '');
+final isSearchingProviderInpageDetail = StateProvider<bool>((ref) => false);
 
 final filteredPurchaseOrderProvider = Provider<List<GRPurchaseOrder>>((ref) {
   final searchQuery = ref.watch(searchQueryProviderInpage);
@@ -20,9 +22,6 @@ final filteredPurchaseOrderProvider = Provider<List<GRPurchaseOrder>>((ref) {
         item.vendor.toLowerCase().contains(searchQuery.toLowerCase());
   }).toList();
 });
-
-final searchQueryProviderInpageDetail = StateProvider<String>((ref) => '');
-final isSearchingProviderInpageDetail = StateProvider<bool>((ref) => false);
 
 final filteredPurchaseOrderProviderDetail =
     Provider<List<GRPurchaseOrderDetail>>((ref) {

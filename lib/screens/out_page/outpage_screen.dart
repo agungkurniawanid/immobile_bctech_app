@@ -5,6 +5,7 @@ import 'package:immobile_bctech_app/models/outpage_model.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:immobile_bctech_app/providers/outpage_provider.dart';
+import 'package:immobile_bctech_app/screens/out_page/outpage_detail_screen.dart';
 
 class OutpageScreen extends ConsumerStatefulWidget {
   const OutpageScreen({super.key});
@@ -370,7 +371,12 @@ class _OutpageScreenState extends ConsumerState<OutpageScreen> {
   Widget _buildHistoryItem(SalesOrder item) {
     final primaryColor = ref.read(primaryColorProvider);
     return InkWell(
-      onTap: () {},
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => OutpageDetailScreen()),
+        );
+      },
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         clipBehavior: Clip.hardEdge,
