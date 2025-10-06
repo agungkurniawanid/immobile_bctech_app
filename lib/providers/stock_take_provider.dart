@@ -6,6 +6,8 @@ import 'package:immobile_bctech_app/models/stock_take_model.dart';
 final searchQueryProviderStockTake = StateProvider<String>((ref) => '');
 final isSearchingProviderStockTake = StateProvider<bool>((ref) => false);
 
+final currentTabIndexStockTakeProvider = StateProvider<int>((ref) => 0);
+
 final searchQueryProviderStockTakeDetail = StateProvider<String>((ref) => '');
 final isSearchingProviderStockTakeDetail = StateProvider<bool>((ref) => false);
 

@@ -847,9 +847,7 @@ class _InpageDetailSreenState extends ConsumerState<InpageDetailSreen> {
                                   color: const Color(0xFF024110),
                                   borderRadius: BorderRadius.circular(20),
                                   child: InkWell(
-                                    onTap: () {
-                                      print('Add button pressed');
-                                    },
+                                    onTap: () {},
                                     borderRadius: BorderRadius.circular(12),
                                     child: Container(
                                       padding: const EdgeInsets.symmetric(
