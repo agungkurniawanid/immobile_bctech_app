@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:immobile_bctech_app/const/color_const.dart';
 import 'package:immobile_bctech_app/mocks/dashboard_mock.dart';
-import 'package:immobile_bctech_app/widgets/widget_menu_card.dart';
-import 'package:immobile_bctech_app/widgets/widget_stock.dart';
+import 'package:immobile_bctech_app/widgets/menu_card_widget.dart';
+import 'package:immobile_bctech_app/widgets/stock_widget.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
