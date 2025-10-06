@@ -7,6 +7,7 @@ import 'package:immobile_bctech_app/mocks/inpage_mock.dart';
 import 'package:immobile_bctech_app/models/outpage_model.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:immobile_bctech_app/providers/outpage_provider.dart';
+import 'package:immobile_bctech_app/screens/functions/dialog_function.dart';
 
 class OutpageDetailScreen extends ConsumerStatefulWidget {
   const OutpageDetailScreen({super.key});
@@ -354,7 +355,12 @@ class _OutpageDetailScreenState extends ConsumerState<OutpageDetailScreen> {
             borderRadius: BorderRadius.circular(30),
             child: InkWell(
               borderRadius: BorderRadius.circular(30),
-              onTap: () {},
+              onTap: () {
+                showSaveWarningPopup(
+                  context,
+                  "Are you sure to save sales order document?",
+                );
+              },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -368,7 +374,7 @@ class _OutpageDetailScreenState extends ConsumerState<OutpageDetailScreen> {
                   ),
                   const SizedBox(width: 12),
                   Text(
-                    'Save Good Receive',
+                    'Save Sales Order',
                     style: GoogleFonts.roboto(
                       color: Colors.white,
                       fontSize: 16,
@@ -844,9 +850,7 @@ class _OutpageDetailScreenState extends ConsumerState<OutpageDetailScreen> {
                                   color: const Color(0xFF024110),
                                   borderRadius: BorderRadius.circular(20),
                                   child: InkWell(
-                                    onTap: () {
-                                      print('Add button pressed');
-                                    },
+                                    onTap: () {},
                                     borderRadius: BorderRadius.circular(12),
                                     child: Container(
                                       padding: const EdgeInsets.symmetric(
