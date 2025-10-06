@@ -1070,7 +1070,7 @@ class _InpageDetailSreenState extends ConsumerState<InpageDetailSreen> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          'Quantity',
+          'Recieve Quantity',
           style: GoogleFonts.roboto(
             fontSize: 14,
             fontWeight: FontWeight.w500,

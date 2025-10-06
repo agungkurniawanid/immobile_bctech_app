@@ -377,72 +377,80 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
 
   Widget _buildHistoryItem(HistoryModel item) {
     final primaryColor = ref.read(primaryColorProvider);
-    return Container(
-      color: Color(0xFFF7FBF2),
-      margin: const EdgeInsets.only(bottom: 12),
-      child: ListTile(
-        contentPadding: const EdgeInsets.all(12),
-        leading: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          constraints: BoxConstraints(minWidth: 80, minHeight: 60),
-          decoration: BoxDecoration(
-            color: Color(0xFFB7F1B9),
-            borderRadius: BorderRadius.circular(12),
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => item.page),
+        );
+      },
+      child: Container(
+        color: Color(0xFFF7FBF2),
+        margin: const EdgeInsets.only(bottom: 12),
+        child: ListTile(
+          contentPadding: const EdgeInsets.all(12),
+
+          leading: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            constraints: BoxConstraints(minWidth: 80, minHeight: 60),
+            decoration: BoxDecoration(
+              color: Color(0xFFB7F1B9),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              item.label.replaceAll(' ', '\n'),
+              style: GoogleFonts.roboto(
+                fontSize: 16,
+                color: primaryColor,
+                fontWeight: FontWeight.bold,
+                height: 1.2,
+              ),
+              textAlign: TextAlign.center,
+            ),
           ),
-          child: Text(
-            item.label.replaceAll(' ', '\n'),
-            style: GoogleFonts.roboto(
-              fontSize: 16,
-              color: primaryColor,
-              fontWeight: FontWeight.bold,
-              height: 1.2,
-            ),
-            textAlign: TextAlign.center,
+          title: Text(
+            item.title,
+            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
+          ),
+          subtitle: Column(
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    FontAwesomeIcons.solidCircleCheck,
+                    size: 18,
+                    color: Color(0xFF4CAF50),
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    item.date,
+                    style: TextStyle(color: Colors.black, fontSize: 14),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Row(
+                children: [
+                  Icon(
+                    FontAwesomeIcons.solidUser,
+                    size: 18,
+                    color: Color(0xFF4CAF50),
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    item.amount,
+                    style: TextStyle(color: Colors.black, fontSize: 14),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          trailing: Icon(
+            FontAwesomeIcons.chevronRight,
+            color: Colors.black,
+            size: 18,
           ),
         ),
-        title: Text(
-          item.title,
-          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
-        ),
-        subtitle: Column(
-          children: [
-            Row(
-              children: [
-                Icon(
-                  FontAwesomeIcons.solidCircleCheck,
-                  size: 18,
-                  color: Color(0xFF4CAF50),
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  item.date,
-                  style: TextStyle(color: Colors.black, fontSize: 14),
-                ),
-              ],
-            ),
-            const SizedBox(height: 6),
-            Row(
-              children: [
-                Icon(
-                  FontAwesomeIcons.solidUser,
-                  size: 18,
-                  color: Color(0xFF4CAF50),
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  item.amount,
-                  style: TextStyle(color: Colors.black, fontSize: 14),
-                ),
-              ],
-            ),
-          ],
-        ),
-        trailing: Icon(
-          FontAwesomeIcons.chevronRight,
-          color: Colors.black,
-          size: 18,
-        ),
-        onTap: () {},
       ),
     );
   }
