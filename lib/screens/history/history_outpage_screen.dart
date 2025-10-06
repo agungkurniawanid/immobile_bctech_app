@@ -2,22 +2,21 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:immobile_bctech_app/const/color_const.dart';
 import 'package:immobile_bctech_app/mocks/inpage_mock.dart';
 import 'package:immobile_bctech_app/models/outpage_model.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:immobile_bctech_app/providers/outpage_provider.dart';
-import 'package:immobile_bctech_app/screens/functions/dialog_function.dart';
+import 'package:immobile_bctech_app/providers/history_provider.dart';
 
-class OutpageDetailScreen extends ConsumerStatefulWidget {
-  const OutpageDetailScreen({super.key});
+class HistoryOutpageScreen extends ConsumerStatefulWidget {
+  const HistoryOutpageScreen({super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
-      _OutpageDetailScreenState();
+      _HistoryOutpageScreenState();
 }
 
-class _OutpageDetailScreenState extends ConsumerState<OutpageDetailScreen> {
+class _HistoryOutpageScreenState extends ConsumerState<HistoryOutpageScreen> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
 
@@ -37,26 +36,26 @@ class _OutpageDetailScreenState extends ConsumerState<OutpageDetailScreen> {
   }
 
   void _onSearchChanged() {
-    ref.read(searchQueryProviderOutPageDetail.notifier).state =
+    ref.read(searchQueryProviderHistoryOutPageDetail.notifier).state =
         _searchController.text;
   }
 
   void _startSearch() {
-    ref.read(isSearchingProviderOutPageDetail.notifier).state = true;
+    ref.read(isSearchingProviderHistoryOutPageDetail.notifier).state = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _searchFocusNode.requestFocus();
     });
   }
 
   void _stopSearch() {
-    ref.read(isSearchingProviderOutPageDetail.notifier).state = false;
-    ref.read(searchQueryProviderOutPageDetail.notifier).state = '';
+    ref.read(isSearchingProviderHistoryOutPageDetail.notifier).state = false;
+    ref.read(searchQueryProviderHistoryOutPageDetail.notifier).state = '';
     _searchController.clear();
     _searchFocusNode.unfocus();
   }
 
   void _clearSearch() {
-    ref.read(searchQueryProviderOutPageDetail.notifier).state = '';
+    ref.read(searchQueryProviderHistoryOutPageDetail.notifier).state = '';
     _searchController.clear();
   }
 
@@ -73,9 +72,9 @@ class _OutpageDetailScreenState extends ConsumerState<OutpageDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final primaryColor = ref.watch(primaryColorProvider);
-    final isSearching = ref.watch(isSearchingProviderOutPageDetail);
-    final searchQuery = ref.watch(searchQueryProviderOutPageDetail);
-    final filteredHistory = ref.watch(filteredSalesOrderProviderDetail);
+    final isSearching = ref.watch(isSearchingProviderHistoryOutPageDetail);
+    final searchQuery = ref.watch(searchQueryProviderHistoryOutPageDetail);
+    final filteredHistory = ref.watch(filteredHistorySalesOrderProviderDetail);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -306,87 +305,11 @@ class _OutpageDetailScreenState extends ConsumerState<OutpageDetailScreen> {
                     return _buildHistoryItem(item);
                   },
                 ),
-                _buildFloatButton(),
               ],
             ),
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildFloatButton() {
-    final primaryColor = ref.watch(primaryColorProvider);
-    final secondaryColor = ref.watch(secondaryColorProvider);
-
-    return Positioned(
-      bottom: 20,
-      left: 0,
-      right: 0,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 40),
-        child: Container(
-          width: double.infinity,
-          height: 60,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [primaryColor, secondaryColor],
-            ),
-            borderRadius: BorderRadius.circular(30),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.blueAccent.withValues(alpha: 0.4),
-                blurRadius: 15,
-                spreadRadius: 2,
-                offset: const Offset(0, 4),
-              ),
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
-                blurRadius: 10,
-                spreadRadius: 1,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Material(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.circular(30),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(30),
-              onTap: () {
-                showSaveWarningPopup(
-                  context,
-                  "Are you sure to save sales order document?",
-                );
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(Icons.add, color: Colors.white, size: 20),
-                  ),
-                  const SizedBox(width: 12),
-                  Text(
-                    'Save Sales Order',
-                    style: GoogleFonts.roboto(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
     );
   }
 
@@ -784,118 +707,6 @@ class _OutpageDetailScreenState extends ConsumerState<OutpageDetailScreen> {
                       ),
 
                       SizedBox(height: 20),
-                      Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: 60,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.3),
-                            width: 1,
-                          ),
-                        ),
-                        child: Stack(
-                          children: [
-                            Expanded(
-                              child: TextField(
-                                style: GoogleFonts.roboto(
-                                  color: Colors.black,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                                decoration: InputDecoration(
-                                  hintText: 'Serial Number',
-                                  hintStyle: const TextStyle(
-                                    color: Color(0xFF7C7C7C),
-                                  ),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                    borderSide: const BorderSide(
-                                      color: Color(0xFFD5D8DE),
-                                      width: 1.5,
-                                    ),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                    borderSide: const BorderSide(
-                                      color: Color(0xFFD5D8DE),
-                                      width: 1.5,
-                                    ),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                    borderSide: const BorderSide(
-                                      color: Color(0xFF024110),
-                                      width: 2,
-                                    ),
-                                  ),
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                    vertical:
-                                        22, // biar teks sejajar secara vertikal
-                                  ),
-                                ),
-                                cursorColor: Colors.black,
-                              ),
-                            ),
-
-                            // Button
-                            Positioned(
-                              right: 0,
-                              child: SizedBox(
-                                width: 100,
-                                height: 60,
-                                child: Material(
-                                  color: const Color(0xFF024110),
-                                  borderRadius: BorderRadius.circular(20),
-                                  child: InkWell(
-                                    onTap: () {},
-                                    borderRadius: BorderRadius.circular(12),
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 16,
-                                        vertical: 0,
-                                      ),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          const Icon(
-                                            Icons.add_rounded,
-                                            size: 18,
-                                            color: Colors.white,
-                                          ),
-                                          const SizedBox(width: 6),
-                                          Text(
-                                            'Add',
-                                            style: GoogleFonts.roboto(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w600,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          '6 / 6 Serial Number Filled',
-                          style: GoogleFonts.roboto(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.redAccent,
-                          ),
-                        ),
-                      ),
                       Column(
                         children: List.generate(serialNumbers.length, (index) {
                           final serial = serialNumbers[index];
@@ -933,17 +744,6 @@ class _OutpageDetailScreenState extends ConsumerState<OutpageDetailScreen> {
                                     color: Colors.black87,
                                   ),
                                 ),
-                                trailing: IconButton(
-                                  icon: Icon(
-                                    Icons.close_rounded,
-                                    color: Colors.redAccent,
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      serialNumbers.removeAt(index);
-                                    });
-                                  },
-                                ),
                               ),
                             ),
                           );
@@ -951,84 +751,6 @@ class _OutpageDetailScreenState extends ConsumerState<OutpageDetailScreen> {
                       ),
                     ],
                   ),
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border(
-                    top: BorderSide(color: Colors.grey.shade300, width: 1),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                          padding: EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.close_rounded,
-                              color: Colors.white,
-                              size: 20,
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              'Close',
-                              style: GoogleFonts.roboto(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFF024110),
-                          padding: EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.check_rounded,
-                              color: Colors.white,
-                              size: 20,
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              'Save',
-                              style: GoogleFonts.roboto(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
                 ),
               ),
             ],
@@ -1085,26 +807,6 @@ class _OutpageDetailScreenState extends ConsumerState<OutpageDetailScreen> {
           ),
           child: Row(
             children: [
-              IconButton(
-                onPressed: () {
-                  if (item.qty > 0) {
-                    setState(() {
-                      item.qty--;
-                      qtyController.text = item.qty.toString();
-                    });
-                  }
-                },
-                icon: Icon(
-                  Icons.remove,
-                  size: 24,
-                  color: item.qty > 0
-                      ? Colors.red.shade600
-                      : Colors.grey.shade400,
-                ),
-                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                constraints: BoxConstraints(minWidth: 32, minHeight: 32),
-              ),
-
               Container(
                 width: 70,
                 padding: EdgeInsets.symmetric(horizontal: 4),
@@ -1144,18 +846,6 @@ class _OutpageDetailScreenState extends ConsumerState<OutpageDetailScreen> {
                     }
                   },
                 ),
-              ),
-
-              IconButton(
-                onPressed: () {
-                  setState(() {
-                    item.qty++;
-                    qtyController.text = item.qty.toString();
-                  });
-                },
-                icon: Icon(Icons.add, size: 24, color: Colors.green.shade600),
-                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                constraints: BoxConstraints(minWidth: 32, minHeight: 32),
               ),
             ],
           ),

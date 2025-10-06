@@ -17,29 +17,58 @@ class NavigationController extends ConsumerStatefulWidget {
       _NavigationControllerState();
 }
 
-class _NavigationControllerState extends ConsumerState<NavigationController> {
+class _NavigationControllerState extends ConsumerState<NavigationController>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
   late PageController _pageController;
-  final int itemCount = 3;
 
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(
-      initialPage: ref.read(bottomNavIndexProvider),
+    final initialIndex = ref.read(bottomNavIndexProvider);
+
+    _tabController = TabController(
+      length: 3,
+      vsync: this,
+      initialIndex: initialIndex,
     );
+
+    _pageController = PageController(initialPage: initialIndex);
+
+    _tabController.addListener(_handleTabSelection);
   }
 
-  void _onPageChanged(int index) {
-    ref.read(bottomNavIndexProvider.notifier).state = index;
+  void _handleTabSelection() {
+    if (_tabController.indexIsChanging) {
+      final newIndex = _tabController.index;
+      ref.read(bottomNavIndexProvider.notifier).state = newIndex;
+      _pageController.jumpToPage(newIndex);
+    }
   }
 
   void _onItemTapped(int index) {
+    // Gunakan animateTo untuk transisi yang smooth
+    _tabController.animateTo(index);
     _pageController.animateToPage(
       index,
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
     );
-    ref.read(bottomNavIndexProvider.notifier).state = index;
+  }
+
+  void _onPageChanged(int index) {
+    // Update state tanpa memicu rebuild yang tidak perlu
+    if (_tabController.index != index) {
+      _tabController.index = index;
+      ref.read(bottomNavIndexProvider.notifier).state = index;
+    }
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    _pageController.dispose();
+    super.dispose();
   }
 
   @override
@@ -48,107 +77,141 @@ class _NavigationControllerState extends ConsumerState<NavigationController> {
     final screenWidth = MediaQuery.of(context).size.width;
     final primaryColor = ref.watch(primaryColorProvider);
 
-    final pages = [
-      const DashboardScreen(),
-      const HistoryScreen(),
-      const ProfileScreen(),
-    ];
-
     return Scaffold(
       body: PageView(
         controller: _pageController,
         onPageChanged: _onPageChanged,
-        children: pages,
+        physics: const ClampingScrollPhysics(), // Physics yang lebih smooth
+        children: const [DashboardScreen(), HistoryScreen(), ProfileScreen()],
       ),
-      bottomNavigationBar: Container(
-        height: 80,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border(
-            top: BorderSide(color: Colors.grey.shade300, width: 0.5),
-          ),
-        ),
-        child: Stack(
-          children: [
-            AnimatedPositioned(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
-              left:
-                  (screenWidth / itemCount) * currentIndex +
-                  (screenWidth / itemCount - 40) / 2.8,
-              top: 0,
-              child: Container(
-                width: 60,
-                height: 6,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      primaryColor,
-                      primaryColor.withOpacity(0.4),
-                      Colors.transparent,
-                    ],
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: primaryColor.withOpacity(0.6),
-                      blurRadius: 8,
-                      spreadRadius: 1,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Row(
-              children: [
-                _buildNavItem(
-                  context,
-                  index: 0,
-                  inactiveIcon: FontAwesomeIcons.house,
-                  activeIcon: FontAwesomeIcons.solidHouse,
-                  isActive: currentIndex == 0,
-                  onTap: _onItemTapped,
-                ),
-                _buildNavItem(
-                  context,
-                  index: 1,
-                  inactiveIcon: FontAwesomeIcons.fileLines,
-                  activeIcon: FontAwesomeIcons.solidFileLines,
-                  isActive: currentIndex == 1,
-                  onTap: _onItemTapped,
-                ),
-                _buildNavItem(
-                  context,
-                  index: 2,
-                  inactiveIcon: FontAwesomeIcons.user,
-                  activeIcon: FontAwesomeIcons.solidUser,
-                  isActive: currentIndex == 2,
-                  onTap: _onItemTapped,
-                ),
-              ],
-            ),
-          ],
-        ),
+      bottomNavigationBar: _BottomNavigationBar(
+        currentIndex: currentIndex,
+        screenWidth: screenWidth,
+        primaryColor: primaryColor,
+        onItemTapped: _onItemTapped,
       ),
     );
   }
+}
 
-  Widget _buildNavItem(
-    BuildContext context, {
-    required int index,
-    required IconData inactiveIcon,
-    required IconData activeIcon,
-    required bool isActive,
-    required Function(int) onTap,
-  }) {
-    final primaryColor = ref.watch(primaryColorProvider);
+class _BottomNavigationBar extends StatelessWidget {
+  final int currentIndex;
+  final double screenWidth;
+  final Color primaryColor;
+  final Function(int) onItemTapped;
 
+  const _BottomNavigationBar({
+    required this.currentIndex,
+    required this.screenWidth,
+    required this.primaryColor,
+    required this.onItemTapped,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 80,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border(
+          top: BorderSide(color: Colors.grey.shade300, width: 0.5),
+        ),
+      ),
+      child: Stack(
+        children: [
+          AnimatedPositioned(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            left:
+                (screenWidth / 3) * currentIndex + (screenWidth / 3 - 40) / 2.8,
+            top: 0,
+            child: Container(
+              width: 60,
+              height: 6,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    primaryColor,
+                    primaryColor.withValues(alpha: 0.4),
+                    Colors.transparent,
+                  ],
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: primaryColor.withValues(alpha: 0.6),
+                    blurRadius: 8,
+                    spreadRadius: 1,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Row(
+            children: [
+              _BottomNavItem(
+                index: 0,
+                inactiveIcon: FontAwesomeIcons.house,
+                activeIcon: FontAwesomeIcons.solidHouse,
+                label: 'Home',
+                isActive: currentIndex == 0,
+                primaryColor: primaryColor,
+                onTap: onItemTapped,
+              ),
+              _BottomNavItem(
+                index: 1,
+                inactiveIcon: FontAwesomeIcons.fileLines,
+                activeIcon: FontAwesomeIcons.solidFileLines,
+                label: 'History',
+                isActive: currentIndex == 1,
+                primaryColor: primaryColor,
+                onTap: onItemTapped,
+              ),
+              _BottomNavItem(
+                index: 2,
+                inactiveIcon: FontAwesomeIcons.user,
+                activeIcon: FontAwesomeIcons.solidUser,
+                label: 'Profile',
+                isActive: currentIndex == 2,
+                primaryColor: primaryColor,
+                onTap: onItemTapped,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BottomNavItem extends StatelessWidget {
+  final int index;
+  final IconData inactiveIcon;
+  final IconData activeIcon;
+  final String label;
+  final bool isActive;
+  final Color primaryColor;
+  final Function(int) onTap;
+
+  const _BottomNavItem({
+    required this.index,
+    required this.inactiveIcon,
+    required this.activeIcon,
+    required this.label,
+    required this.isActive,
+    required this.primaryColor,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Expanded(
       child: GestureDetector(
         onTap: () => onTap(index),
+        behavior: HitTestBehavior.opaque, // Memastikan area tap lebih responsif
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -159,11 +222,7 @@ class _NavigationControllerState extends ConsumerState<NavigationController> {
             ),
             const SizedBox(height: 6),
             Text(
-              index == 0
-                  ? 'Home'
-                  : index == 1
-                  ? 'History'
-                  : 'Profile',
+              label,
               style: TextStyle(
                 color: isActive ? primaryColor : Colors.grey,
                 fontSize: 12,

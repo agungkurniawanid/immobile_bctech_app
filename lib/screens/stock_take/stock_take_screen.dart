@@ -1,20 +1,21 @@
-// history_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:immobile_bctech_app/const/color_const.dart';
-import 'package:immobile_bctech_app/models/history_model.dart';
-import 'package:immobile_bctech_app/providers/history_provider.dart';
+import 'package:immobile_bctech_app/models/stock_take_model.dart';
+import 'package:immobile_bctech_app/providers/stock_take_provider.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:immobile_bctech_app/screens/stock_take/stock_take_detail.dart';
 
-class HistoryScreen extends ConsumerStatefulWidget {
-  const HistoryScreen({super.key});
+class StockTakeScreen extends ConsumerStatefulWidget {
+  const StockTakeScreen({super.key});
 
   @override
-  ConsumerState<HistoryScreen> createState() => _HistoryScreenState();
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _StockTakeScreenState();
 }
 
-class _HistoryScreenState extends ConsumerState<HistoryScreen> {
+class _StockTakeScreenState extends ConsumerState<StockTakeScreen> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
 
@@ -25,25 +26,26 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   }
 
   void _onSearchChanged() {
-    ref.read(searchQueryProvider.notifier).state = _searchController.text;
+    ref.read(searchQueryProviderStockTake.notifier).state =
+        _searchController.text;
   }
 
   void _startSearch() {
-    ref.read(isSearchingProvider.notifier).state = true;
+    ref.read(isSearchingProviderStockTake.notifier).state = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _searchFocusNode.requestFocus();
     });
   }
 
   void _stopSearch() {
-    ref.read(isSearchingProvider.notifier).state = false;
-    ref.read(searchQueryProvider.notifier).state = '';
+    ref.read(isSearchingProviderStockTake.notifier).state = false;
+    ref.read(searchQueryProviderStockTake.notifier).state = '';
     _searchController.clear();
     _searchFocusNode.unfocus();
   }
 
   void _clearSearch() {
-    ref.read(searchQueryProvider.notifier).state = '';
+    ref.read(searchQueryProviderStockTake.notifier).state = '';
     _searchController.clear();
   }
 
@@ -57,9 +59,9 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   @override
   Widget build(BuildContext context) {
     final primaryColor = ref.watch(primaryColorProvider);
-    final isSearching = ref.watch(isSearchingProvider);
-    final searchQuery = ref.watch(searchQueryProvider);
-    final filteredHistory = ref.watch(filteredHistoryProvider);
+    final isSearching = ref.watch(isSearchingProviderStockTake);
+    final searchQuery = ref.watch(searchQueryProviderStockTake);
+    final filteredHistory = ref.watch(filteredStockTakeProvider);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -73,14 +75,13 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   AppBar _buildNormalAppBar(Color primaryColor) {
     return AppBar(
       title: Text(
-        'History',
+        'Stock Take',
         style: GoogleFonts.roboto(fontSize: 24, fontWeight: FontWeight.bold),
       ),
       backgroundColor: primaryColor,
       foregroundColor: Colors.white,
       elevation: 0,
       centerTitle: true,
-      automaticallyImplyLeading: false,
       actions: [
         IconButton(
           icon: const Icon(Icons.search),
@@ -133,7 +134,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
               focusNode: _searchFocusNode,
               style: const TextStyle(color: Colors.white, fontSize: 18),
               decoration: InputDecoration(
-                hintText: 'Search history...',
+                hintText: 'Search Purchase Order...',
                 hintStyle: TextStyle(
                   color: Colors.white.withValues(alpha: 0.7),
                   fontSize: 18,
@@ -163,7 +164,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   }
 
   Widget _buildBody(
-    List<HistoryModel> historyItems,
+    List<StockTakeModel> grPurchaseOrders,
     bool isSearching,
     String searchQuery,
   ) {
@@ -171,74 +172,27 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
       return _buildSearchSuggestions();
     }
 
-    if (isSearching && searchQuery.isNotEmpty && historyItems.isEmpty) {
+    if (isSearching && searchQuery.isNotEmpty && grPurchaseOrders.isEmpty) {
       return _buildNoResults(searchQuery);
     }
 
-    if (historyItems.isEmpty) {
+    if (grPurchaseOrders.isEmpty) {
       return _buildEmptyState();
     }
 
-    final primaryColor = ref.watch(primaryColorProvider);
-
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "${historyItems.length} of ${historyItems.length} Data Shown",
-                style: GoogleFonts.roboto(fontSize: 16, color: Colors.black),
-              ),
-
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 0,
-                ),
-                decoration: BoxDecoration(
-                  color: Color(0xFFF7FBF2),
-                  border: Border.all(color: primaryColor, width: 1.5),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: DropdownButton<String>(
-                  value: 'PO Date',
-                  icon: Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: const Icon(
-                      FontAwesomeIcons.arrowDownWideShort,
-                      color: Colors.black,
-                      size: 20,
-                    ),
-                  ),
-                  underline: const SizedBox(),
-                  borderRadius: BorderRadius.circular(12),
-                  elevation: 2,
-                  dropdownColor: Colors.white,
-                  style: GoogleFonts.roboto(fontSize: 16, color: Colors.black),
-                  items: ['PO Date', 'SO Date'].map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {},
-                ),
-              ),
-            ],
-          ),
-        ),
-
         const SizedBox(height: 16),
         Expanded(
           child: ListView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: historyItems.length,
+            itemCount: grPurchaseOrders.length,
             itemBuilder: (context, index) {
-              final item = historyItems[index];
-              return _buildHistoryItem(item);
+              final item = grPurchaseOrders[index];
+              return _buildHistoryItem(
+                item,
+                StockTakeDetail(uniqueIDStockTakeRef: item.uniqueID),
+              );
             },
           ),
         ),
@@ -311,7 +265,6 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.search_off, size: 80, color: Colors.grey.shade400),
-
             const SizedBox(height: 16),
             Text(
               'No results found',
@@ -321,14 +274,12 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                 color: Colors.grey.shade600,
               ),
             ),
-
             const SizedBox(height: 8),
             Text(
               'No matches for "$query"',
               style: TextStyle(fontSize: 16, color: Colors.grey.shade500),
               textAlign: TextAlign.center,
             ),
-
             const SizedBox(height: 24),
             FilledButton(
               onPressed: _clearSearch,
@@ -354,7 +305,6 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.history, size: 80, color: Colors.grey.shade400),
-
           const SizedBox(height: 16),
           Text(
             'No history yet',
@@ -364,7 +314,6 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
               color: Colors.grey.shade600,
             ),
           ),
-
           const SizedBox(height: 8),
           Text(
             'Your transaction history will appear here',
@@ -375,80 +324,69 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
     );
   }
 
-  Widget _buildHistoryItem(HistoryModel item) {
+  Widget _buildHistoryItem(StockTakeModel item, [Widget? route]) {
     final primaryColor = ref.read(primaryColorProvider);
-    return InkWell(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => item.page),
-        );
-      },
-      child: Container(
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      clipBehavior: Clip.hardEdge,
+      decoration: BoxDecoration(
         color: Color(0xFFF7FBF2),
-        margin: const EdgeInsets.only(bottom: 12),
-        child: ListTile(
-          contentPadding: const EdgeInsets.all(12),
-
-          leading: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            constraints: BoxConstraints(minWidth: 80, minHeight: 60),
-            decoration: BoxDecoration(
-              color: Color(0xFFB7F1B9),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              item.label.replaceAll(' ', '\n'),
-              style: GoogleFonts.roboto(
-                fontSize: 16,
-                color: primaryColor,
-                fontWeight: FontWeight.bold,
-                height: 1.2,
-              ),
-              textAlign: TextAlign.center,
-            ),
+        borderRadius: BorderRadius.all(Radius.circular(20)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withValues(alpha: 0.3),
+            spreadRadius: 1,
+            blurRadius: 5,
+            offset: const Offset(0, 3),
           ),
-          title: Text(
-            item.title,
-            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
-          ),
-          subtitle: Column(
+        ],
+      ),
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => route!),
+          );
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(34.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Icon(
-                    FontAwesomeIcons.solidCircleCheck,
-                    size: 18,
-                    color: Color(0xFF4CAF50),
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    item.date,
-                    style: TextStyle(color: Colors.black, fontSize: 14),
-                  ),
-                ],
+              Text(
+                '[${item.uniqueID}]',
+                style: GoogleFonts.roboto(
+                  fontSize: 22,
+                  color: primaryColor,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              const SizedBox(height: 6),
+              Text(
+                'Last Transaction',
+                style: GoogleFonts.roboto(
+                  fontSize: 16,
+                  color: Colors.black,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
               Row(
                 children: [
-                  Icon(
-                    FontAwesomeIcons.solidUser,
-                    size: 18,
-                    color: Color(0xFF4CAF50),
+                  Container(
+                    width: 20,
+                    height: 20,
+                    decoration: BoxDecoration(
+                      color: primaryColor,
+                      borderRadius: BorderRadius.circular(100),
+                    ),
                   ),
-                  const SizedBox(width: 6),
-                  Text(
-                    item.amount,
-                    style: TextStyle(color: Colors.black, fontSize: 14),
+                  Icon(
+                    FontAwesomeIcons.chevronRight,
+                    size: 16,
+                    color: primaryColor,
                   ),
                 ],
               ),
             ],
-          ),
-          trailing: Icon(
-            FontAwesomeIcons.chevronRight,
-            color: Colors.black,
-            size: 18,
           ),
         ),
       ),

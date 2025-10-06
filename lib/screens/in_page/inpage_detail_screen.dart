@@ -7,6 +7,7 @@ import 'package:immobile_bctech_app/mocks/inpage_mock.dart';
 import 'package:immobile_bctech_app/models/inpage_model.dart';
 import 'package:immobile_bctech_app/providers/inpage_provider.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:immobile_bctech_app/screens/functions/dialog_function.dart';
 
 class InpageDetailSreen extends ConsumerStatefulWidget {
   const InpageDetailSreen({super.key});
@@ -354,7 +355,9 @@ class _InpageDetailSreenState extends ConsumerState<InpageDetailSreen> {
             borderRadius: BorderRadius.circular(30),
             child: InkWell(
               borderRadius: BorderRadius.circular(30),
-              onTap: () {},
+              onTap: () {
+                showSaveWarningPopup(context);
+              },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -844,9 +847,7 @@ class _InpageDetailSreenState extends ConsumerState<InpageDetailSreen> {
                                   color: const Color(0xFF024110),
                                   borderRadius: BorderRadius.circular(20),
                                   child: InkWell(
-                                    onTap: () {
-                                      print('Add button pressed');
-                                    },
+                                    onTap: () {},
                                     borderRadius: BorderRadius.circular(12),
                                     child: Container(
                                       padding: const EdgeInsets.symmetric(
@@ -1067,7 +1068,7 @@ class _InpageDetailSreenState extends ConsumerState<InpageDetailSreen> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          'Quantity',
+          'Recieve Quantity',
           style: GoogleFonts.roboto(
             fontSize: 14,
             fontWeight: FontWeight.w500,

@@ -48,7 +48,7 @@ class _WidgetStockState extends ConsumerState<WidgetStock> {
         children: [
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: primaryColor,
               borderRadius: const BorderRadius.only(
@@ -67,7 +67,7 @@ class _WidgetStockState extends ConsumerState<WidgetStock> {
             child: Text(
               widget.id ?? "PO276IMP228250004",
               style: GoogleFonts.roboto(
-                fontSize: 14,
+                fontSize: 16,
                 fontWeight: FontWeight.w500,
                 color: Colors.white,
               ),
