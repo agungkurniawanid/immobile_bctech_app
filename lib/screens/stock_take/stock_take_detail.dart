@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:immobile_bctech_app/const/color_const.dart';
 import 'package:immobile_bctech_app/models/stock_take_model.dart';
 import 'package:immobile_bctech_app/providers/stock_take_provider.dart';
+import 'package:immobile_bctech_app/screens/stock_take/stock_take_detail_inprogress_or_completed.dart';
 
 class StockTakeDetail extends ConsumerStatefulWidget {
   final String uniqueIDStockTakeRef;
@@ -452,7 +453,17 @@ class _StockTakeDetailState extends ConsumerState<StockTakeDetail>
   }) {
     final primaryColor = ref.read(primaryColorProvider);
     return InkWell(
-      onTap: () {},
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => StockTakeDetailInprogressOrCompleted(
+              createdBy: 'Agung Kurniawan',
+              uniqueID: item.uniqueID,
+            ),
+          ),
+        );
+      },
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         clipBehavior: Clip.hardEdge,

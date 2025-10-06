@@ -1,3 +1,4 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:immobile_bctech_app/models/stock_take_model.dart';
 
@@ -92,3 +93,73 @@ final stockTakeListProviderDetail = StateProvider<List<StockTakeModelDetail>>((
     );
   });
 });
+
+final stockTakeDetailList =
+    Provider<List<StockTakeModelDetailInprogressOrCompleted>>((ref) {
+      return [
+        StockTakeModelDetailInprogressOrCompleted(
+          id: 1,
+          headingTitle: 'Head 10 Kg',
+          kodeBox: '11100001',
+          sku: '11100001',
+          tagName: ['UU', 'QI', 'BLOCK'],
+          status: 'completed',
+          uniqueID: 'ST001',
+          tableData: [
+            StockTakeTableRowModel(
+              label: 'Stock',
+              unit: 120.0,
+              bun: 12.0,
+              box: 120.0,
+              kg: 120.0,
+            ),
+            StockTakeTableRowModel(
+              label: 'Physical',
+              unit: 0.0,
+              bun: 0.0,
+              box: 0.0,
+              kg: 0.0,
+            ),
+            StockTakeTableRowModel(
+              label: 'Different',
+              unit: -120.0,
+              bun: 0.0,
+              box: 0.0,
+              kg: 0.0,
+            ),
+          ],
+        ),
+        StockTakeModelDetailInprogressOrCompleted(
+          id: 2,
+          headingTitle: 'Ceker Bersih',
+          kodeBox: '11110003',
+          sku: '11110003',
+          tagName: ['UU', 'QI', 'BLOCK'],
+          status: 'inprogress',
+          uniqueID: 'ST002',
+          tableData: [
+            StockTakeTableRowModel(
+              label: 'Stock',
+              unit: 47.0,
+              bun: 7.8,
+              box: 47.0,
+              kg: 47.0,
+            ),
+            StockTakeTableRowModel(
+              label: 'Physical',
+              unit: 0.0,
+              bun: 0.0,
+              box: 0.0,
+              kg: 0.0,
+            ),
+            StockTakeTableRowModel(
+              label: 'Different',
+              unit: -47.9,
+              bun: 0.0,
+              box: 0.0,
+              kg: 0.0,
+            ),
+          ],
+        ),
+      ];
+    });

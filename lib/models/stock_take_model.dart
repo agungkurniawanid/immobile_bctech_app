@@ -19,3 +19,41 @@ class StockTakeModelDetail {
     required this.createdAt,
   });
 }
+
+class StockTakeTableRowModel {
+  final String label; // Stock, Physical, Different
+  final double unit;
+  final double bun;
+  final double box;
+  final double kg;
+
+  StockTakeTableRowModel({
+    required this.label,
+    required this.unit,
+    required this.bun,
+    required this.box,
+    required this.kg,
+  });
+}
+
+class StockTakeModelDetailInprogressOrCompleted {
+  final int id;
+  final String headingTitle;
+  final String kodeBox;
+  final String sku;
+  final List<String> tagName;
+  final String status; // bisa 'completed' atau 'inprogress'
+  final List<StockTakeTableRowModel> tableData; // ini yang menampung tabel
+  final String uniqueID; // tambahkan uniqueID
+
+  StockTakeModelDetailInprogressOrCompleted({
+    required this.id,
+    required this.headingTitle,
+    required this.kodeBox,
+    required this.sku,
+    required this.tagName,
+    required this.status,
+    required this.tableData,
+    required this.uniqueID,
+  });
+}
