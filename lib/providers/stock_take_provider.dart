@@ -4,6 +4,7 @@ import 'package:immobile_bctech_app/mocks/stock_take_mock.dart';
 import 'package:immobile_bctech_app/models/stock_take_model.dart';
 
 final currentTabIndexStockTakeProvider = StateProvider<int>((ref) => 0);
+final selectedItemsProvider = StateProvider<Set<String>>((ref) => <String>{});
 
 final filteredStockTakeProvider = createFilteredProvider<StockTakeModel>(
   key: 'stocktake',

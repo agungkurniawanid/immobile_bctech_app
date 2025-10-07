@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/legacy.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:immobile_bctech_app/const/color_const.dart';
@@ -59,6 +58,19 @@ class _StockTakeDetailInprogressOrCompletedState
     _searchController.clear();
   }
 
+  void _toggleItemSelection(String uniqueID) {
+    final selectedItems = ref.read(selectedItemsProvider.notifier);
+    selectedItems.update((state) {
+      final newState = Set<String>.from(state);
+      if (newState.contains(uniqueID)) {
+        newState.remove(uniqueID);
+      } else {
+        newState.add(uniqueID);
+      }
+      return newState;
+    });
+  }
+
   @override
   void dispose() {
     _searchController.dispose();
@@ -92,6 +104,8 @@ class _StockTakeDetailInprogressOrCompletedState
   Widget _buildFloatButton() {
     final primaryColor = ref.watch(primaryColorProvider);
     final secondaryColor = ref.watch(secondaryColorProvider);
+    final selectedItems = ref.watch(selectedItemsProvider);
+    final hasSelectedItems = selectedItems.isNotEmpty;
 
     final isSearching = ref.watch(isSearchingProviderFamily(searchKey));
     if (isSearching) {
@@ -104,6 +118,37 @@ class _StockTakeDetailInprogressOrCompletedState
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
+          if (hasSelectedItems) ...[
+            // Clear Selection Button
+            Container(
+              width: 60,
+              height: 60,
+              margin: const EdgeInsets.only(right: 16),
+              decoration: BoxDecoration(
+                color: Colors.grey,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withValues(alpha: 0.4),
+                    blurRadius: 15,
+                    spreadRadius: 2,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Material(
+                color: Colors.transparent,
+                shape: const CircleBorder(),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(30),
+                  onTap: () {
+                    ref.read(selectedItemsProvider.notifier).state = <String>{};
+                  },
+                  child: const Icon(Icons.clear, color: Colors.white, size: 24),
+                ),
+              ),
+            ),
+          ],
           // Message Button
           Container(
             width: 60,
@@ -119,12 +164,6 @@ class _StockTakeDetailInprogressOrCompletedState
                   spreadRadius: 2,
                   offset: const Offset(0, 4),
                 ),
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.1),
-                  blurRadius: 10,
-                  spreadRadius: 1,
-                  offset: const Offset(0, 2),
-                ),
               ],
             ),
             child: Material(
@@ -137,7 +176,6 @@ class _StockTakeDetailInprogressOrCompletedState
               ),
             ),
           ),
-
           // Check Button
           Container(
             width: 60,
@@ -155,12 +193,6 @@ class _StockTakeDetailInprogressOrCompletedState
                   blurRadius: 15,
                   spreadRadius: 2,
                   offset: const Offset(0, 4),
-                ),
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.1),
-                  blurRadius: 10,
-                  spreadRadius: 1,
-                  offset: const Offset(0, 2),
                 ),
               ],
             ),
@@ -196,12 +228,12 @@ class _StockTakeDetailInprogressOrCompletedState
       shadowColor: Colors.black.withValues(alpha: 0.3),
       actions: [
         IconButton(
-          icon: Icon(FontAwesomeIcons.book, size: 24),
+          icon: const Icon(FontAwesomeIcons.book, size: 24),
           onPressed: () {},
           tooltip: 'Noted',
         ),
         IconButton(
-          icon: Icon(FontAwesomeIcons.qrcode, size: 24),
+          icon: const Icon(FontAwesomeIcons.qrcode, size: 24),
           onPressed: () {},
           tooltip: 'QR Code',
         ),
@@ -433,17 +465,13 @@ class _StockTakeDetailInprogressOrCompletedState
   Widget _buildModernCard(StockTakeModelDetailInprogressOrCompleted item) {
     final primaryColor = ref.watch(primaryColorProvider);
     final isCompleted = item.status == 'completed';
-
-    // State untuk menandai apakah card sedang dipilih/checked
-    final isSelectedProvider = StateProvider.family<bool, String>(
-      (ref, uniqueId) => false,
-    );
-    final isSelected = ref.watch(isSelectedProvider(item.uniqueID));
+    final selectedItems = ref.watch(selectedItemsProvider);
+    final isSelected = selectedItems.contains(item.uniqueID);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isSelected ? primaryColor.withValues(alpha: 0.05) : Colors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -452,13 +480,13 @@ class _StockTakeDetailInprogressOrCompletedState
             offset: const Offset(0, 5),
           ),
         ],
+        border: isSelected ? Border.all(color: primaryColor, width: 2) : null,
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: () {
-            ref.read(isSelectedProvider(item.uniqueID).notifier).state =
-                !isSelected;
+            _toggleItemSelection(item.uniqueID);
           },
           borderRadius: BorderRadius.circular(20),
           child: Padding(
@@ -504,18 +532,23 @@ class _StockTakeDetailInprogressOrCompletedState
                         ],
                       ),
                     ),
-                    // Toggle antara status circle dan checkbox
                     AnimatedSwitcher(
                       duration: const Duration(milliseconds: 200),
                       child: isSelected
-                          ? // Checkbox ketika dipilih
-                            Container(
+                          ? Container(
                               key: const ValueKey('checkbox'),
                               width: 24,
                               height: 24,
                               decoration: BoxDecoration(
-                                color: Colors.green,
+                                color: primaryColor,
                                 borderRadius: BorderRadius.circular(6),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: primaryColor.withValues(alpha: 0.3),
+                                    blurRadius: 4,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
                               ),
                               child: const Icon(
                                 Icons.check,
@@ -523,8 +556,7 @@ class _StockTakeDetailInprogressOrCompletedState
                                 color: Colors.white,
                               ),
                             )
-                          : // Status circle ketika tidak dipilih
-                            Container(
+                          : Container(
                               key: const ValueKey('circle'),
                               width: 8,
                               height: 8,
@@ -538,42 +570,34 @@ class _StockTakeDetailInprogressOrCompletedState
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 16),
-
-                // Informasi utama
                 Text(
                   item.headingTitle,
                   style: GoogleFonts.roboto(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                    color: isSelected ? primaryColor : Colors.black87,
                   ),
                 ),
-
                 const SizedBox(height: 12),
-
-                // Informasi detail
-                _buildInfoRow('Box Code', item.kodeBox),
-                _buildInfoRow('SKU', item.sku),
-
+                _buildInfoRow(
+                  'Box Code',
+                  item.kodeBox,
+                  isSelected,
+                  primaryColor,
+                ),
+                _buildInfoRow('SKU', item.sku, isSelected, primaryColor),
                 const SizedBox(height: 12),
-
-                // Tags
                 Wrap(
                   spacing: 8,
                   runSpacing: 6,
-                  children: item.tagName.map((tag) => _buildTag(tag)).toList(),
+                  children: item.tagName
+                      .map((tag) => _buildTag(tag, isSelected))
+                      .toList(),
                 ),
-
                 const SizedBox(height: 16),
-
-                // Summary table
-                _buildTableSummary(item.tableData),
-
+                _buildTableSummary(item.tableData, isSelected),
                 const SizedBox(height: 8),
-
-                // Footer dengan arrow
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -588,7 +612,9 @@ class _StockTakeDetailInprogressOrCompletedState
                     Container(
                       padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
-                        color: primaryColor.withValues(alpha: 0.1),
+                        color: primaryColor.withValues(
+                          alpha: isSelected ? 0.2 : 0.1,
+                        ),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Icon(
@@ -607,7 +633,12 @@ class _StockTakeDetailInprogressOrCompletedState
     );
   }
 
-  Widget _buildInfoRow(String label, String value) {
+  Widget _buildInfoRow(
+    String label,
+    String value,
+    bool isSelected,
+    Color primaryColor,
+  ) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
       child: Row(
@@ -616,7 +647,9 @@ class _StockTakeDetailInprogressOrCompletedState
             '$label: ',
             style: GoogleFonts.roboto(
               fontSize: 14,
-              color: Colors.grey.shade600,
+              color: isSelected
+                  ? primaryColor.withValues(alpha: 0.8)
+                  : Colors.grey.shade600,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -624,7 +657,7 @@ class _StockTakeDetailInprogressOrCompletedState
             value,
             style: GoogleFonts.roboto(
               fontSize: 14,
-              color: Colors.black87,
+              color: isSelected ? primaryColor : Colors.black87,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -633,51 +666,59 @@ class _StockTakeDetailInprogressOrCompletedState
     );
   }
 
-  Widget _buildTag(String tag) {
+  Widget _buildTag(String tag, bool isSelected) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: Colors.blue.withValues(alpha: 0.1),
+        color: isSelected
+            ? Colors.blue.withValues(alpha: 0.2)
+            : Colors.blue.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
+        border: Border.all(
+          color: isSelected
+              ? Colors.blue.withValues(alpha: 0.5)
+              : Colors.blue.withValues(alpha: 0.3),
+        ),
       ),
       child: Text(
         tag,
         style: GoogleFonts.roboto(
           fontSize: 12,
-          color: Colors.blue.shade700,
+          color: isSelected ? Colors.blue.shade800 : Colors.blue.shade700,
           fontWeight: FontWeight.w500,
         ),
       ),
     );
   }
 
-  Widget _buildTableSummary(List<StockTakeTableRowModel> tableData) {
+  Widget _buildTableSummary(
+    List<StockTakeTableRowModel> tableData,
+    bool isSelected,
+  ) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.grey.shade50,
+        color: isSelected ? Colors.grey.shade100 : Colors.grey.shade50,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(
+          color: isSelected ? Colors.grey.shade300 : Colors.grey.shade200,
+        ),
       ),
       child: Column(
         children: [
-          // Header tabel dengan label UNIT yang sejajar
-          _buildTableHeader(),
+          _buildTableHeader(isSelected),
           const SizedBox(height: 8),
-          // Garis pemisah
           Container(height: 1, color: Colors.grey.shade300),
           const SizedBox(height: 8),
-          // Data rows
-          ...tableData.map((row) => _buildTableRow(row)),
+          ...tableData.map((row) => _buildTableRow(row, isSelected)),
         ],
       ),
     );
   }
 
-  Widget _buildTableHeader() {
+  Widget _buildTableHeader(bool isSelected) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
           Expanded(
@@ -686,7 +727,7 @@ class _StockTakeDetailInprogressOrCompletedState
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: Colors.grey.shade700,
+                color: isSelected ? Colors.grey.shade800 : Colors.grey.shade700,
               ),
             ),
           ),
@@ -697,7 +738,7 @@ class _StockTakeDetailInprogressOrCompletedState
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: Colors.grey.shade700,
+                color: isSelected ? Colors.grey.shade800 : Colors.grey.shade700,
               ),
             ),
           ),
@@ -708,7 +749,7 @@ class _StockTakeDetailInprogressOrCompletedState
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: Colors.grey.shade700,
+                color: isSelected ? Colors.grey.shade800 : Colors.grey.shade700,
               ),
             ),
           ),
@@ -719,7 +760,7 @@ class _StockTakeDetailInprogressOrCompletedState
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: Colors.grey.shade700,
+                color: isSelected ? Colors.grey.shade800 : Colors.grey.shade700,
               ),
             ),
           ),
@@ -728,7 +769,7 @@ class _StockTakeDetailInprogressOrCompletedState
     );
   }
 
-  Widget _buildTableRow(StockTakeTableRowModel row) {
+  Widget _buildTableRow(StockTakeTableRowModel row, bool isSelected) {
     final isDifferent = row.label == 'Different';
     final hasNegativeValue = row.bun < 0 || row.box < 0 || row.kg < 0;
 
@@ -738,26 +779,28 @@ class _StockTakeDetailInprogressOrCompletedState
         children: [
           Expanded(
             child: Text(
-              row.label, // Stock, Physical, Different
+              row.label,
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
                 color: isDifferent
                     ? (hasNegativeValue ? Colors.red : Colors.green)
-                    : Colors.grey.shade700,
+                    : (isSelected
+                          ? Colors.grey.shade800
+                          : Colors.grey.shade700),
               ),
             ),
           ),
           Expanded(
             child: Text(
-              row.bun.toStringAsFixed(1), // Data BUN
+              row.bun.toStringAsFixed(1),
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
                 color: isDifferent
                     ? (row.bun < 0 ? Colors.red : Colors.green)
-                    : Colors.black87,
+                    : (isSelected ? Colors.black87 : Colors.black87),
               ),
             ),
           ),
@@ -770,20 +813,20 @@ class _StockTakeDetailInprogressOrCompletedState
                 fontWeight: FontWeight.w600,
                 color: isDifferent
                     ? (row.box < 0 ? Colors.red : Colors.green)
-                    : Colors.black87,
+                    : (isSelected ? Colors.black87 : Colors.black87),
               ),
             ),
           ),
           Expanded(
             child: Text(
-              row.kg.toStringAsFixed(1), // Data KG
+              row.kg.toStringAsFixed(1),
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
                 color: isDifferent
                     ? (row.kg < 0 ? Colors.red : Colors.green)
-                    : Colors.black87,
+                    : (isSelected ? Colors.black87 : Colors.black87),
               ),
             ),
           ),
