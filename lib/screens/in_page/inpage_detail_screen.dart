@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:immobile_bctech_app/const/color_const.dart';
-import 'package:immobile_bctech_app/helpers/search_base_provider.dart';
+import 'package:immobile_bctech_app/helpers/search_helper.dart';
 import 'package:immobile_bctech_app/mocks/inpage_mock.dart';
 import 'package:immobile_bctech_app/models/inpage_model.dart';
 import 'package:immobile_bctech_app/providers/inpage_provider.dart';

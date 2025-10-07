@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:immobile_bctech_app/const/color_const.dart';
-import 'package:immobile_bctech_app/helpers/search_base_provider.dart';
+import 'package:immobile_bctech_app/helpers/search_helper.dart';
 import 'package:immobile_bctech_app/models/stock_take_model.dart';
 import 'package:immobile_bctech_app/providers/stock_take_provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';

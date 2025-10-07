@@ -4,7 +4,7 @@ import 'package:immobile_bctech_app/mocks/outpage_mock.dart';
 import 'package:immobile_bctech_app/models/history_model.dart';
 import 'package:immobile_bctech_app/models/inpage_model.dart';
 import 'package:immobile_bctech_app/models/outpage_model.dart';
-import 'package:immobile_bctech_app/providers/search_base_provider.dart';
+import 'package:immobile_bctech_app/helpers/search_helper.dart';
 
 final filteredHistoryProvider = createFilteredProvider<HistoryModel>(
   key: 'history',

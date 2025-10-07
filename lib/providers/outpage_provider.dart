@@ -1,4 +1,4 @@
-import 'package:immobile_bctech_app/helpers/search_base_provider.dart';
+import 'package:immobile_bctech_app/helpers/search_helper.dart';
 import 'package:immobile_bctech_app/mocks/outpage_mock.dart';
 import 'package:immobile_bctech_app/models/outpage_model.dart';
 

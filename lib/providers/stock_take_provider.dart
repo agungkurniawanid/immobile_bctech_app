@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/legacy.dart';
-import 'package:immobile_bctech_app/helpers/search_base_provider.dart';
+import 'package:immobile_bctech_app/helpers/search_helper.dart';
 import 'package:immobile_bctech_app/mocks/stock_take_mock.dart';
 import 'package:immobile_bctech_app/models/stock_take_model.dart';
 

@@ -80,7 +80,102 @@ class _StockTakeDetailInprogressOrCompletedState
       appBar: isSearching
           ? _buildSearchAppBar(primaryColor, searchQuery)
           : _buildNormalAppBar(primaryColor),
-      body: _buildBody(filteredHistory, isSearching, searchQuery),
+      body: Stack(
+        children: [
+          _buildBody(filteredHistory, isSearching, searchQuery),
+          _buildFloatButton(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFloatButton() {
+    final primaryColor = ref.watch(primaryColorProvider);
+    final secondaryColor = ref.watch(secondaryColorProvider);
+
+    final isSearching = ref.watch(isSearchingProviderFamily(searchKey));
+    if (isSearching) {
+      return const SizedBox.shrink();
+    }
+
+    return Positioned(
+      bottom: 20,
+      right: 20,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Message Button
+          Container(
+            width: 60,
+            height: 60,
+            margin: const EdgeInsets.only(right: 16),
+            decoration: BoxDecoration(
+              color: Colors.blueAccent,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.blueAccent.withValues(alpha: 0.4),
+                  blurRadius: 15,
+                  spreadRadius: 2,
+                  offset: const Offset(0, 4),
+                ),
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.1),
+                  blurRadius: 10,
+                  spreadRadius: 1,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Material(
+              color: Colors.transparent,
+              shape: const CircleBorder(),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(30),
+                onTap: () {},
+                child: const Icon(Icons.message, color: Colors.white, size: 24),
+              ),
+            ),
+          ),
+
+          // Check Button
+          Container(
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [primaryColor, secondaryColor],
+              ),
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.blueAccent.withValues(alpha: 0.4),
+                  blurRadius: 15,
+                  spreadRadius: 2,
+                  offset: const Offset(0, 4),
+                ),
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.1),
+                  blurRadius: 10,
+                  spreadRadius: 1,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Material(
+              color: Colors.transparent,
+              shape: const CircleBorder(),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(30),
+                onTap: () {},
+                child: const Icon(Icons.check, color: Colors.white, size: 24),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -587,7 +682,7 @@ class _StockTakeDetailInprogressOrCompletedState
         children: [
           Expanded(
             child: Text(
-              'UNIT', // Label UNIT yang sejajar dengan kolom
+              'UNIT',
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
@@ -668,7 +763,7 @@ class _StockTakeDetailInprogressOrCompletedState
           ),
           Expanded(
             child: Text(
-              row.box.toStringAsFixed(1), // Data BOX
+              row.box.toStringAsFixed(1),
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 12,
