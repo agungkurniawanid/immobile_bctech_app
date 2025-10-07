@@ -7,6 +7,7 @@ import 'package:immobile_bctech_app/const/color_const.dart';
 import 'package:immobile_bctech_app/mocks/inpage_mock.dart';
 import 'package:immobile_bctech_app/models/outpage_model.dart';
 import 'package:immobile_bctech_app/providers/history_provider.dart';
+import 'package:immobile_bctech_app/helpers/search_helper.dart';
 
 class HistoryOutpageScreen extends ConsumerStatefulWidget {
   const HistoryOutpageScreen({super.key});
@@ -26,6 +27,8 @@ class _HistoryOutpageScreenState extends ConsumerState<HistoryOutpageScreen> {
       TextEditingController();
   final TextEditingController _customerController = TextEditingController();
 
+  static const String searchKey = 'historyOutpageDetail';
+
   @override
   void initState() {
     super.initState();
@@ -36,26 +39,26 @@ class _HistoryOutpageScreenState extends ConsumerState<HistoryOutpageScreen> {
   }
 
   void _onSearchChanged() {
-    ref.read(searchQueryProviderHistoryOutPageDetail.notifier).state =
+    ref.read(searchQueryProviderFamily(searchKey).notifier).state =
         _searchController.text;
   }
 
   void _startSearch() {
-    ref.read(isSearchingProviderHistoryOutPageDetail.notifier).state = true;
+    ref.read(isSearchingProviderFamily(searchKey).notifier).state = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _searchFocusNode.requestFocus();
     });
   }
 
   void _stopSearch() {
-    ref.read(isSearchingProviderHistoryOutPageDetail.notifier).state = false;
-    ref.read(searchQueryProviderHistoryOutPageDetail.notifier).state = '';
+    ref.read(isSearchingProviderFamily(searchKey).notifier).state = false;
+    ref.read(searchQueryProviderFamily(searchKey).notifier).state = '';
     _searchController.clear();
     _searchFocusNode.unfocus();
   }
 
   void _clearSearch() {
-    ref.read(searchQueryProviderHistoryOutPageDetail.notifier).state = '';
+    ref.read(searchQueryProviderFamily(searchKey).notifier).state = '';
     _searchController.clear();
   }
 
@@ -72,8 +75,8 @@ class _HistoryOutpageScreenState extends ConsumerState<HistoryOutpageScreen> {
   @override
   Widget build(BuildContext context) {
     final primaryColor = ref.watch(primaryColorProvider);
-    final isSearching = ref.watch(isSearchingProviderHistoryOutPageDetail);
-    final searchQuery = ref.watch(searchQueryProviderHistoryOutPageDetail);
+    final isSearching = ref.watch(isSearchingProviderFamily(searchKey));
+    final searchQuery = ref.watch(searchQueryProviderFamily(searchKey));
     final filteredHistory = ref.watch(filteredHistorySalesOrderProviderDetail);
 
     return Scaffold(

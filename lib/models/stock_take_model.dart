@@ -21,7 +21,7 @@ class StockTakeModelDetail {
 }
 
 class StockTakeTableRowModel {
-  final String label; // Stock, Physical, Different
+  final String label;
   final double unit;
   final double bun;
   final double box;
@@ -42,9 +42,9 @@ class StockTakeModelDetailInprogressOrCompleted {
   final String kodeBox;
   final String sku;
   final List<String> tagName;
-  final String status; // bisa 'completed' atau 'inprogress'
-  final List<StockTakeTableRowModel> tableData; // ini yang menampung tabel
-  final String uniqueID; // tambahkan uniqueID
+  final String status;
+  final List<StockTakeTableRowModel> tableData;
+  final String uniqueID;
 
   StockTakeModelDetailInprogressOrCompleted({
     required this.id,

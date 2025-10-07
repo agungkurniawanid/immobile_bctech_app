@@ -7,6 +7,7 @@ import 'package:immobile_bctech_app/const/color_const.dart';
 import 'package:immobile_bctech_app/mocks/inpage_mock.dart';
 import 'package:immobile_bctech_app/models/inpage_model.dart';
 import 'package:immobile_bctech_app/providers/history_provider.dart';
+import 'package:immobile_bctech_app/helpers/search_helper.dart';
 
 class HistoryInpageScreen extends ConsumerStatefulWidget {
   const HistoryInpageScreen({super.key});
@@ -26,6 +27,8 @@ class _HistoryInpageScreenState extends ConsumerState<HistoryInpageScreen> {
       TextEditingController();
   final TextEditingController _vendorController = TextEditingController();
 
+  static const String searchKey = 'historyInpageDetail';
+
   @override
   void initState() {
     super.initState();
@@ -36,26 +39,26 @@ class _HistoryInpageScreenState extends ConsumerState<HistoryInpageScreen> {
   }
 
   void _onSearchChanged() {
-    ref.read(searchQueryProviderHistoryInpageDetail.notifier).state =
+    ref.read(searchQueryProviderFamily(searchKey).notifier).state =
         _searchController.text;
   }
 
   void _startSearch() {
-    ref.read(isSearchingProviderHistoryInpageDetail.notifier).state = true;
+    ref.read(isSearchingProviderFamily(searchKey).notifier).state = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _searchFocusNode.requestFocus();
     });
   }
 
   void _stopSearch() {
-    ref.read(isSearchingProviderHistoryInpageDetail.notifier).state = false;
-    ref.read(searchQueryProviderHistoryInpageDetail.notifier).state = '';
+    ref.read(isSearchingProviderFamily(searchKey).notifier).state = false;
+    ref.read(searchQueryProviderFamily(searchKey).notifier).state = '';
     _searchController.clear();
     _searchFocusNode.unfocus();
   }
 
   void _clearSearch() {
-    ref.read(searchQueryProviderHistoryInpageDetail.notifier).state = '';
+    ref.read(searchQueryProviderFamily(searchKey).notifier).state = '';
     _searchController.clear();
   }
 
@@ -72,8 +75,9 @@ class _HistoryInpageScreenState extends ConsumerState<HistoryInpageScreen> {
   @override
   Widget build(BuildContext context) {
     final primaryColor = ref.watch(primaryColorProvider);
-    final isSearching = ref.watch(isSearchingProviderHistoryInpageDetail);
-    final searchQuery = ref.watch(searchQueryProviderHistoryInpageDetail);
+    final isSearching = ref.watch(isSearchingProviderFamily(searchKey));
+    final searchQuery = ref.watch(searchQueryProviderFamily(searchKey));
+
     final filteredHistory = ref.watch(
       filteredHistoryPurchaseOrderProviderDetail,
     );

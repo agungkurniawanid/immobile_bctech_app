@@ -34,7 +34,6 @@ class _NavigationControllerState extends ConsumerState<NavigationController>
     );
 
     _pageController = PageController(initialPage: initialIndex);
-
     _tabController.addListener(_handleTabSelection);
   }
 
@@ -47,7 +46,6 @@ class _NavigationControllerState extends ConsumerState<NavigationController>
   }
 
   void _onItemTapped(int index) {
-    // Gunakan animateTo untuk transisi yang smooth
     _tabController.animateTo(index);
     _pageController.animateToPage(
       index,
@@ -57,7 +55,6 @@ class _NavigationControllerState extends ConsumerState<NavigationController>
   }
 
   void _onPageChanged(int index) {
-    // Update state tanpa memicu rebuild yang tidak perlu
     if (_tabController.index != index) {
       _tabController.index = index;
       ref.read(bottomNavIndexProvider.notifier).state = index;
@@ -81,7 +78,7 @@ class _NavigationControllerState extends ConsumerState<NavigationController>
       body: PageView(
         controller: _pageController,
         onPageChanged: _onPageChanged,
-        physics: const ClampingScrollPhysics(), // Physics yang lebih smooth
+        physics: const ClampingScrollPhysics(),
         children: const [DashboardScreen(), HistoryScreen(), ProfileScreen()],
       ),
       bottomNavigationBar: _BottomNavigationBar(
@@ -94,7 +91,7 @@ class _NavigationControllerState extends ConsumerState<NavigationController>
   }
 }
 
-class _BottomNavigationBar extends StatelessWidget {
+class _BottomNavigationBar extends ConsumerWidget {
   final int currentIndex;
   final double screenWidth;
   final Color primaryColor;
@@ -108,7 +105,7 @@ class _BottomNavigationBar extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       height: 80,
       decoration: BoxDecoration(
@@ -187,7 +184,7 @@ class _BottomNavigationBar extends StatelessWidget {
   }
 }
 
-class _BottomNavItem extends StatelessWidget {
+class _BottomNavItem extends ConsumerWidget {
   final int index;
   final IconData inactiveIcon;
   final IconData activeIcon;
@@ -207,11 +204,11 @@ class _BottomNavItem extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Expanded(
       child: GestureDetector(
         onTap: () => onTap(index),
-        behavior: HitTestBehavior.opaque, // Memastikan area tap lebih responsif
+        behavior: HitTestBehavior.opaque,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

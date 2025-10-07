@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:immobile_bctech_app/const/color_const.dart';
+import 'package:immobile_bctech_app/helpers/search_helper.dart';
 import 'package:immobile_bctech_app/models/outpage_model.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -18,6 +19,8 @@ class _OutpageScreenState extends ConsumerState<OutpageScreen> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
 
+  static const String searchKey = 'outpage';
+
   @override
   void initState() {
     super.initState();
@@ -25,26 +28,26 @@ class _OutpageScreenState extends ConsumerState<OutpageScreen> {
   }
 
   void _onSearchChanged() {
-    ref.read(searchQueryProviderOutPage.notifier).state =
+    ref.read(searchQueryProviderFamily(searchKey).notifier).state =
         _searchController.text;
   }
 
   void _startSearch() {
-    ref.read(isSearchingProviderOutPage.notifier).state = true;
+    ref.read(isSearchingProviderFamily(searchKey).notifier).state = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _searchFocusNode.requestFocus();
     });
   }
 
   void _stopSearch() {
-    ref.read(isSearchingProviderOutPage.notifier).state = false;
-    ref.read(searchQueryProviderOutPage.notifier).state = '';
+    ref.read(isSearchingProviderFamily(searchKey).notifier).state = false;
+    ref.read(searchQueryProviderFamily(searchKey).notifier).state = '';
     _searchController.clear();
     _searchFocusNode.unfocus();
   }
 
   void _clearSearch() {
-    ref.read(searchQueryProviderOutPage.notifier).state = '';
+    ref.read(searchQueryProviderFamily(searchKey).notifier).state = '';
     _searchController.clear();
   }
 
@@ -58,8 +61,8 @@ class _OutpageScreenState extends ConsumerState<OutpageScreen> {
   @override
   Widget build(BuildContext context) {
     final primaryColor = ref.watch(primaryColorProvider);
-    final isSearching = ref.watch(isSearchingProviderOutPage);
-    final searchQuery = ref.watch(searchQueryProviderOutPage);
+    final isSearching = ref.watch(isSearchingProviderFamily(searchKey));
+    final searchQuery = ref.watch(searchQueryProviderFamily(searchKey));
     final filteredHistory = ref.watch(filteredSalesOrderProvider);
 
     return Scaffold(

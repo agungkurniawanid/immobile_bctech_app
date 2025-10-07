@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:immobile_bctech_app/const/color_const.dart';
+import 'package:immobile_bctech_app/helpers/search_helper.dart';
 import 'package:immobile_bctech_app/mocks/inpage_mock.dart';
 import 'package:immobile_bctech_app/models/outpage_model.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:immobile_bctech_app/providers/outpage_provider.dart';
-import 'package:immobile_bctech_app/screens/functions/dialog_function.dart';
+import 'package:immobile_bctech_app/functions/dialog_function.dart';
 
 class OutpageDetailScreen extends ConsumerStatefulWidget {
   const OutpageDetailScreen({super.key});
@@ -27,6 +28,8 @@ class _OutpageDetailScreenState extends ConsumerState<OutpageDetailScreen> {
       TextEditingController();
   final TextEditingController _customerController = TextEditingController();
 
+  static const String searchKey = 'outpageDetail';
+
   @override
   void initState() {
     super.initState();
@@ -37,26 +40,26 @@ class _OutpageDetailScreenState extends ConsumerState<OutpageDetailScreen> {
   }
 
   void _onSearchChanged() {
-    ref.read(searchQueryProviderOutPageDetail.notifier).state =
+    ref.read(searchQueryProviderFamily(searchKey).notifier).state =
         _searchController.text;
   }
 
   void _startSearch() {
-    ref.read(isSearchingProviderOutPageDetail.notifier).state = true;
+    ref.read(isSearchingProviderFamily(searchKey).notifier).state = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _searchFocusNode.requestFocus();
     });
   }
 
   void _stopSearch() {
-    ref.read(isSearchingProviderOutPageDetail.notifier).state = false;
-    ref.read(searchQueryProviderOutPageDetail.notifier).state = '';
+    ref.read(isSearchingProviderFamily(searchKey).notifier).state = false;
+    ref.read(searchQueryProviderFamily(searchKey).notifier).state = '';
     _searchController.clear();
     _searchFocusNode.unfocus();
   }
 
   void _clearSearch() {
-    ref.read(searchQueryProviderOutPageDetail.notifier).state = '';
+    ref.read(searchQueryProviderFamily(searchKey).notifier).state = '';
     _searchController.clear();
   }
 
@@ -73,8 +76,8 @@ class _OutpageDetailScreenState extends ConsumerState<OutpageDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final primaryColor = ref.watch(primaryColorProvider);
-    final isSearching = ref.watch(isSearchingProviderOutPageDetail);
-    final searchQuery = ref.watch(searchQueryProviderOutPageDetail);
+    final isSearching = ref.watch(isSearchingProviderFamily(searchKey));
+    final searchQuery = ref.watch(searchQueryProviderFamily(searchKey));
     final filteredHistory = ref.watch(filteredSalesOrderProviderDetail);
 
     return Scaffold(

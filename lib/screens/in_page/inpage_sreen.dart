@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:immobile_bctech_app/const/color_const.dart';
+import 'package:immobile_bctech_app/helpers/search_helper.dart';
 import 'package:immobile_bctech_app/models/inpage_model.dart';
 import 'package:immobile_bctech_app/providers/inpage_provider.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -18,6 +19,8 @@ class _InpageSreenState extends ConsumerState<InpageSreen> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
 
+  static const String searchKey = "inpage";
+
   @override
   void initState() {
     super.initState();
@@ -25,25 +28,26 @@ class _InpageSreenState extends ConsumerState<InpageSreen> {
   }
 
   void _onSearchChanged() {
-    ref.read(searchQueryProviderInpage.notifier).state = _searchController.text;
+    ref.read(searchQueryProviderFamily(searchKey).notifier).state =
+        _searchController.text;
   }
 
   void _startSearch() {
-    ref.read(isSearchingProviderInpage.notifier).state = true;
+    ref.read(isSearchingProviderFamily(searchKey).notifier).state = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _searchFocusNode.requestFocus();
     });
   }
 
   void _stopSearch() {
-    ref.read(isSearchingProviderInpage.notifier).state = false;
-    ref.read(searchQueryProviderInpage.notifier).state = '';
+    ref.read(isSearchingProviderFamily(searchKey).notifier).state = false;
+    ref.read(searchQueryProviderFamily(searchKey).notifier).state = '';
     _searchController.clear();
     _searchFocusNode.unfocus();
   }
 
   void _clearSearch() {
-    ref.read(searchQueryProviderInpage.notifier).state = '';
+    ref.read(searchQueryProviderFamily(searchKey).notifier).state = '';
     _searchController.clear();
   }
 
@@ -57,8 +61,8 @@ class _InpageSreenState extends ConsumerState<InpageSreen> {
   @override
   Widget build(BuildContext context) {
     final primaryColor = ref.watch(primaryColorProvider);
-    final isSearching = ref.watch(isSearchingProviderInpage);
-    final searchQuery = ref.watch(searchQueryProviderInpage);
+    final isSearching = ref.watch(isSearchingProviderFamily(searchKey));
+    final searchQuery = ref.watch(searchQueryProviderFamily(searchKey));
     final filteredHistory = ref.watch(filteredPurchaseOrderProvider);
 
     return Scaffold(

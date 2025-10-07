@@ -35,78 +35,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   child: SafeArea(
                     child: Column(
                       children: [
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              RichText(
-                                text: const TextSpan(
-                                  text: 'Good Day,\n',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  children: [
-                                    TextSpan(
-                                      text: 'Mr. Warehouse\n',
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    WidgetSpan(child: SizedBox(height: 30)),
-                                    TextSpan(
-                                      text: 'App Version 1.0.0',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.black54,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-
-                              const Spacer(),
-                              Icon(
-                                FontAwesomeIcons.solidBell,
-                                color: primaryColor,
-                              ),
-                            ],
-                          ),
-                        ),
-
+                        _buildAppBarDashboard(primaryColor),
                         const SizedBox(height: 20),
-                        GridView.builder(
-                          shrinkWrap: true,
-                          padding: const EdgeInsets.all(0),
-                          physics: const NeverScrollableScrollPhysics(),
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 4,
-                                crossAxisSpacing: 14,
-                                mainAxisSpacing: 14,
-                                childAspectRatio: 0.85,
-                              ),
-                          itemCount: menuItems.length,
-                          itemBuilder: (_, index) {
-                            final menuItem = menuItems[index];
-                            return WidgetMenuCard(
-                              icon: menuItem['icon'],
-                              title: menuItem['title'],
-                              color: menuItem['color'],
-                              page: menuItem['page'],
-                            );
-                          },
-                        ),
+                        _buildMenuItem(),
                       ],
                     ),
                   ),
@@ -175,13 +106,84 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       ),
     );
   }
+
+  Widget _buildAppBarDashboard(primaryColor) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          RichText(
+            text: const TextSpan(
+              text: 'Good Day,\n',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.black,
+                fontWeight: FontWeight.w500,
+              ),
+              children: [
+                TextSpan(
+                  text: 'Mr. Warehouse\n',
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                WidgetSpan(child: SizedBox(height: 30)),
+                TextSpan(
+                  text: 'App Version 1.0.0',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.black54,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const Spacer(),
+          Icon(FontAwesomeIcons.solidBell, color: primaryColor),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMenuItem() {
+    return GridView.builder(
+      shrinkWrap: true,
+      padding: const EdgeInsets.all(0),
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 4,
+        crossAxisSpacing: 14,
+        mainAxisSpacing: 14,
+        childAspectRatio: 0.85,
+      ),
+      itemCount: menuItems.length,
+      itemBuilder: (_, index) {
+        final menuItem = menuItems[index];
+        return WidgetMenuCard(
+          icon: menuItem['icon'],
+          title: menuItem['title'],
+          color: menuItem['color'],
+          page: menuItem['page'],
+        );
+      },
+    );
+  }
 }
 
 class CurveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     var path = Path();
-
     path.lineTo(0, size.height - 40);
     path.quadraticBezierTo(
       size.width / 2,
@@ -189,10 +191,8 @@ class CurveClipper extends CustomClipper<Path> {
       size.width,
       size.height - 40,
     );
-
     path.lineTo(size.width, 0);
     path.close();
-
     return path;
   }
 

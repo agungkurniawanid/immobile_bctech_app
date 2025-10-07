@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:immobile_bctech_app/const/color_const.dart';
+import 'package:immobile_bctech_app/helpers/search_base_provider.dart';
 import 'package:immobile_bctech_app/models/stock_take_model.dart';
 import 'package:immobile_bctech_app/providers/stock_take_provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -19,6 +20,8 @@ class _StockTakeScreenState extends ConsumerState<StockTakeScreen> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
 
+  static const String searchKey = 'stocktake';
+
   @override
   void initState() {
     super.initState();
@@ -26,26 +29,26 @@ class _StockTakeScreenState extends ConsumerState<StockTakeScreen> {
   }
 
   void _onSearchChanged() {
-    ref.read(searchQueryProviderStockTake.notifier).state =
+    ref.read(searchQueryProviderFamily(searchKey).notifier).state =
         _searchController.text;
   }
 
   void _startSearch() {
-    ref.read(isSearchingProviderStockTake.notifier).state = true;
+    ref.read(isSearchingProviderFamily(searchKey).notifier).state = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _searchFocusNode.requestFocus();
     });
   }
 
   void _stopSearch() {
-    ref.read(isSearchingProviderStockTake.notifier).state = false;
-    ref.read(searchQueryProviderStockTake.notifier).state = '';
+    ref.read(isSearchingProviderFamily(searchKey).notifier).state = false;
+    ref.read(searchQueryProviderFamily(searchKey).notifier).state = '';
     _searchController.clear();
     _searchFocusNode.unfocus();
   }
 
   void _clearSearch() {
-    ref.read(searchQueryProviderStockTake.notifier).state = '';
+    ref.read(searchQueryProviderFamily(searchKey).notifier).state = '';
     _searchController.clear();
   }
 
@@ -59,8 +62,8 @@ class _StockTakeScreenState extends ConsumerState<StockTakeScreen> {
   @override
   Widget build(BuildContext context) {
     final primaryColor = ref.watch(primaryColorProvider);
-    final isSearching = ref.watch(isSearchingProviderStockTake);
-    final searchQuery = ref.watch(searchQueryProviderStockTake);
+    final isSearching = ref.watch(isSearchingProviderFamily(searchKey));
+    final searchQuery = ref.watch(searchQueryProviderFamily(searchKey));
     final filteredHistory = ref.watch(filteredStockTakeProvider);
 
     return Scaffold(

@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:immobile_bctech_app/const/color_const.dart';
 import 'package:immobile_bctech_app/models/history_model.dart';
 import 'package:immobile_bctech_app/providers/history_provider.dart';
+import 'package:immobile_bctech_app/helpers/search_helper.dart';
 
 class HistoryScreen extends ConsumerStatefulWidget {
   const HistoryScreen({super.key});
@@ -18,6 +19,8 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
 
+  static const String searchKey = 'history';
+
   @override
   void initState() {
     super.initState();
@@ -25,25 +28,26 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   }
 
   void _onSearchChanged() {
-    ref.read(searchQueryProvider.notifier).state = _searchController.text;
+    ref.read(searchQueryProviderFamily(searchKey).notifier).state =
+        _searchController.text;
   }
 
   void _startSearch() {
-    ref.read(isSearchingProvider.notifier).state = true;
+    ref.read(isSearchingProviderFamily(searchKey).notifier).state = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _searchFocusNode.requestFocus();
     });
   }
 
   void _stopSearch() {
-    ref.read(isSearchingProvider.notifier).state = false;
-    ref.read(searchQueryProvider.notifier).state = '';
+    ref.read(isSearchingProviderFamily(searchKey).notifier).state = false;
+    ref.read(searchQueryProviderFamily(searchKey).notifier).state = '';
     _searchController.clear();
     _searchFocusNode.unfocus();
   }
 
   void _clearSearch() {
-    ref.read(searchQueryProvider.notifier).state = '';
+    ref.read(searchQueryProviderFamily(searchKey).notifier).state = '';
     _searchController.clear();
   }
 
@@ -57,8 +61,8 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   @override
   Widget build(BuildContext context) {
     final primaryColor = ref.watch(primaryColorProvider);
-    final isSearching = ref.watch(isSearchingProvider);
-    final searchQuery = ref.watch(searchQueryProvider);
+    final isSearching = ref.watch(isSearchingProviderFamily(searchKey));
+    final searchQuery = ref.watch(searchQueryProviderFamily(searchKey));
     final filteredHistory = ref.watch(filteredHistoryProvider);
 
     return Scaffold(

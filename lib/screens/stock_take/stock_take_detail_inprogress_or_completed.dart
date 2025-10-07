@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/legacy.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:immobile_bctech_app/const/color_const.dart';
+import 'package:immobile_bctech_app/helpers/search_helper.dart';
 import 'package:immobile_bctech_app/models/stock_take_model.dart';
 import 'package:immobile_bctech_app/providers/stock_take_provider.dart';
 
@@ -26,6 +27,8 @@ class _StockTakeDetailInprogressOrCompletedState
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
 
+  static const String searchKey = 'stocktakeDetailInprogressOrCompleted';
+
   @override
   void initState() {
     super.initState();
@@ -33,48 +36,26 @@ class _StockTakeDetailInprogressOrCompletedState
   }
 
   void _onSearchChanged() {
-    ref
-        .read(searchQueryProviderStockTakeDetailInprogressOrCompleted.notifier)
-        .state = _searchController
-        .text;
+    ref.read(searchQueryProviderFamily(searchKey).notifier).state =
+        _searchController.text;
   }
 
   void _startSearch() {
-    ref
-            .read(
-              isSearchingProviderStockTakeDetailInprogressOrCompleted.notifier,
-            )
-            .state =
-        true;
+    ref.read(isSearchingProviderFamily(searchKey).notifier).state = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _searchFocusNode.requestFocus();
     });
   }
 
   void _stopSearch() {
-    ref
-            .read(
-              isSearchingProviderStockTakeDetailInprogressOrCompleted.notifier,
-            )
-            .state =
-        false;
-    ref
-            .read(
-              searchQueryProviderStockTakeDetailInprogressOrCompleted.notifier,
-            )
-            .state =
-        '';
+    ref.read(isSearchingProviderFamily(searchKey).notifier).state = false;
+    ref.read(searchQueryProviderFamily(searchKey).notifier).state = '';
     _searchController.clear();
     _searchFocusNode.unfocus();
   }
 
   void _clearSearch() {
-    ref
-            .read(
-              searchQueryProviderStockTakeDetailInprogressOrCompleted.notifier,
-            )
-            .state =
-        '';
+    ref.read(searchQueryProviderFamily(searchKey).notifier).state = '';
     _searchController.clear();
   }
 
@@ -88,12 +69,8 @@ class _StockTakeDetailInprogressOrCompletedState
   @override
   Widget build(BuildContext context) {
     final primaryColor = ref.watch(primaryColorProvider);
-    final isSearching = ref.watch(
-      isSearchingProviderStockTakeDetailInprogressOrCompleted,
-    );
-    final searchQuery = ref.watch(
-      searchQueryProviderStockTakeDetailInprogressOrCompleted,
-    );
+    final isSearching = ref.watch(isSearchingProviderFamily(searchKey));
+    final searchQuery = ref.watch(searchQueryProviderFamily(searchKey));
     final filteredHistory = ref.watch(
       filteredStockTakeProviderDetailInprogressOrCompleted,
     );
@@ -385,7 +362,6 @@ class _StockTakeDetailInprogressOrCompletedState
         color: Colors.transparent,
         child: InkWell(
           onTap: () {
-            // Toggle selection state
             ref.read(isSelectedProvider(item.uniqueID).notifier).state =
                 !isSelected;
           },
@@ -395,7 +371,6 @@ class _StockTakeDetailInprogressOrCompletedState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header dengan status
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [

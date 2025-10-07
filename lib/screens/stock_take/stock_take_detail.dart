@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:immobile_bctech_app/const/color_const.dart';
+import 'package:immobile_bctech_app/helpers/search_helper.dart';
 import 'package:immobile_bctech_app/models/stock_take_model.dart';
 import 'package:immobile_bctech_app/providers/stock_take_provider.dart';
 import 'package:immobile_bctech_app/screens/stock_take/stock_take_detail_inprogress_or_completed.dart';
@@ -22,6 +23,8 @@ class _StockTakeDetailState extends ConsumerState<StockTakeDetail>
   final FocusNode _searchFocusNode = FocusNode();
   late TabController _tabController;
 
+  static const String searchKey = 'stocktakeDetail';
+
   @override
   void initState() {
     super.initState();
@@ -38,26 +41,26 @@ class _StockTakeDetailState extends ConsumerState<StockTakeDetail>
   }
 
   void _onSearchChanged() {
-    ref.read(searchQueryProviderStockTakeDetail.notifier).state =
+    ref.read(searchQueryProviderFamily(searchKey).notifier).state =
         _searchController.text;
   }
 
   void _startSearch() {
-    ref.read(isSearchingProviderStockTakeDetail.notifier).state = true;
+    ref.read(isSearchingProviderFamily(searchKey).notifier).state = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _searchFocusNode.requestFocus();
     });
   }
 
   void _stopSearch() {
-    ref.read(isSearchingProviderStockTakeDetail.notifier).state = false;
-    ref.read(searchQueryProviderStockTake.notifier).state = '';
+    ref.read(isSearchingProviderFamily(searchKey).notifier).state = false;
+    ref.read(searchQueryProviderFamily(searchKey).notifier).state = '';
     _searchController.clear();
     _searchFocusNode.unfocus();
   }
 
   void _clearSearch() {
-    ref.read(searchQueryProviderStockTake.notifier).state = '';
+    ref.read(searchQueryProviderFamily(searchKey).notifier).state = '';
     _searchController.clear();
   }
 
@@ -72,8 +75,8 @@ class _StockTakeDetailState extends ConsumerState<StockTakeDetail>
   @override
   Widget build(BuildContext context) {
     final primaryColor = ref.watch(primaryColorProvider);
-    final isSearching = ref.watch(isSearchingProviderStockTakeDetail);
-    final searchQuery = ref.watch(searchQueryProviderStockTake);
+    final isSearching = ref.watch(isSearchingProviderFamily(searchKey));
+    final searchQuery = ref.watch(searchQueryProviderFamily(searchKey));
     final filteredHistory = ref.watch(filteredStockTakeProviderDetail);
 
     return Scaffold(
@@ -607,7 +610,7 @@ class _StockTakeDetailState extends ConsumerState<StockTakeDetail>
     final primaryColor = ref.watch(primaryColorProvider);
     final secondaryColor = ref.watch(secondaryColorProvider);
 
-    final isSearching = ref.watch(isSearchingProviderStockTakeDetail);
+    final isSearching = ref.watch(isSearchingProviderFamily(searchKey));
     if (isSearching) {
       return const SizedBox.shrink();
     }
